@@ -1,0 +1,2181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Synaptic Plasticity as Short-Term Memory</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Red+Hat+Display:ital,wght@0,300..900;1,300..900&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #ffffff;
+  --text: #1a1a1a;
+  --muted: #6a6a6a;
+  --light: #f5f5f7;
+  --border: #d0d0d5;
+  --blue: #2c6bcf;
+  --red: #c0392b;
+  --green: #27ae60;
+  --orange: #d48c2c;
+  --purple: #7d4fa8;
+  --font-family: 'Red Hat Display', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+}
+.dark {
+  --bg: #1a1a1a;
+  --text: #e0e0e0;
+  --muted: #999999;
+  --light: #2a2a2a;
+  --border: #3a3a3a;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font: 17px/1.7 var(--font-family);
+  padding: 40px 20px;
+  transition: background 0.2s, color 0.2s;
+}
+.container { max-width: 880px; margin: 0 auto; }
+
+header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 18px;
+  margin-bottom: 24px;
+}
+header h1 {
+  font: 700 32px/1.2 var(--font-family);
+  letter-spacing: -0.02em;
+  color: var(--text);
+}
+header h1 small {
+  font: 400 16px/1.4 var(--font-family);
+  color: var(--muted);
+  display: block;
+  margin-top: 4px;
+  letter-spacing: 0;
+}
+.toolbar {
+  display: flex;
+  gap: 8px;
+  margin-top: 8px;
+}
+.toolbar button {
+  background: none;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 6px 16px;
+  font: 13px/1.5 var(--font-family);
+  color: var(--text);
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.toolbar button:hover { background: var(--light); }
+
+.audience-strip {
+  background: var(--light);
+  padding: 12px 20px;
+  border-radius: 6px;
+  margin-bottom: 24px;
+  font: 14px/1.6 var(--font-family);
+  color: var(--muted);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 28px;
+  align-items: center;
+}
+.audience-strip strong { color: var(--text); font-weight: 600; }
+
+.claim {
+  font-size: 20px;
+  line-height: 1.6;
+  color: var(--text);
+  padding: 12px 0 18px 0;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 28px;
+}
+.claim .prediction-box {
+  margin-top: 14px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+  font-size: 15px;
+}
+.claim .prediction-box button {
+  padding: 6px 20px;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  background: var(--light);
+  font: 14px var(--font-family);
+  cursor: pointer;
+  color: var(--text);
+  transition: background 0.15s;
+}
+.claim .prediction-box button:hover { background: var(--border); }
+.claim .prediction-box .result { font: 14px var(--font-family); color: var(--muted); min-width: 130px; }
+
+.section {
+  margin-bottom: 48px;
+  padding-bottom: 38px;
+  border-bottom: 1px solid var(--border);
+}
+.section:last-of-type { border-bottom: none; }
+.section h2 {
+  font: 600 24px/1.3 var(--font-family);
+  letter-spacing: -0.01em;
+  margin-bottom: 6px;
+  color: var(--text);
+}
+.section .desc {
+  font-size: 15.5px;
+  color: var(--muted);
+  line-height: 1.9;
+  margin-bottom: 16px;
+  max-width: 740px;
+}
+.section .desc .math {
+  font-family: var(--font-family);
+  font-style: italic;
+  color: var(--text);
+}
+.section .desc .citation {
+  color: var(--blue);
+  font-size: 13px;
+  text-decoration: none;
+  border-bottom: 1px dotted var(--blue);
+  font-family: var(--font-family);
+}
+.section .desc .citation:hover { border-bottom: 1px solid var(--blue); }
+.section .desc .eq {
+  display: block;
+  text-align: center;
+  font-family: var(--font-family);
+  font-size: 17px;
+  padding: 10px 0;
+  color: var(--text);
+}
+
+.bdh-reported {
+  background: var(--light);
+  padding: 16px 22px;
+  border-radius: 4px;
+  margin: 16px 0;
+  font: 14px/1.7 var(--font-family);
+  color: var(--muted);
+}
+.bdh-reported strong { color: var(--text); font-weight: 600; }
+.bdh-reported ul { margin: 6px 0 0 20px; line-height: 1.8; }
+
+.controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 18px;
+  align-items: center;
+  margin-bottom: 14px;
+}
+.controls label {
+  font: 13px/1.5 var(--font-family);
+  color: var(--muted);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.controls .value { min-width: 32px; display: inline-block; font-weight: 500; color: var(--text); }
+button {
+  background: none;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 6px 18px;
+  font: 13px/1.5 var(--font-family);
+  color: var(--text);
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s;
+  white-space: nowrap;
+}
+button:hover { background: var(--light); border-color: var(--blue); }
+button.primary {
+  background: var(--text);
+  color: var(--bg);
+  border-color: var(--text);
+}
+button.primary:hover { opacity: 0.85; }
+button:disabled { opacity: 0.5; cursor: not-allowed; }
+select, input {
+  font: inherit;
+  background: var(--bg);
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 4px 8px;
+}
+input[type=range] {
+  width: 120px;
+  accent-color: var(--blue);
+  cursor: pointer;
+}
+.badge {
+  display: inline-block;
+  padding: 2px 14px;
+  border-radius: 20px;
+  background: var(--light);
+  font: 12px/1.5 var(--font-family);
+  color: var(--muted);
+}
+
+.grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+.grid3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 18px; }
+.grid4 { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 14px; }
+@media (max-width: 720px) { .grid2, .grid3, .grid4 { grid-template-columns: 1fr; } }
+
+.canvas-wrap {
+  overflow: hidden;
+  position: relative;
+}
+.canvas-wrap canvas {
+  display: block;
+  width: 100%;
+  height: auto;
+  background: var(--bg);
+  cursor: crosshair;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+}
+
+.status {
+  background: var(--light);
+  padding: 10px 16px;
+  border-radius: 4px;
+  font: 14px/1.5 var(--font-family);
+  color: var(--muted);
+  min-height: 42px;
+  margin: 6px 0;
+}
+
+.legend { display: flex; gap: 18px; font: 13px/1.5 var(--font-family); color: var(--muted); }
+.legend span::before { content: "●"; margin-right: 5px; color: currentColor; }
+.red { color: var(--red); }
+.blue { color: var(--blue); }
+.green { color: var(--green); }
+.orange { color: var(--orange); }
+.purple { color: var(--purple); }
+
+table { width: 100%; border-collapse: collapse; font: 14px/1.5 var(--font-family); }
+td, th { padding: 5px 8px; border-bottom: 1px solid var(--border); text-align: left; }
+.note { font: 14px/1.5 var(--font-family); color: var(--muted); margin-top: 6px; }
+hr { margin: 20px 0; border: 0; border-top: 1px solid var(--border); }
+
+.misconception {
+  background: var(--light);
+  padding: 16px 22px;
+  border-radius: 4px;
+  margin: 16px 0;
+  font: 14px/1.7 var(--font-family);
+  color: var(--muted);
+}
+.misconception strong { color: var(--text); font-weight: 600; }
+.misconception .highlight { color: var(--red); font-weight: 600; }
+.limits {
+  background: var(--light);
+  padding: 16px 22px;
+  border-radius: 4px;
+  margin: 20px 0;
+  font: 14px/1.7 var(--font-family);
+  color: var(--muted);
+}
+.limits strong { color: var(--text); font-weight: 600; }
+
+.refs {
+  font: 14px/1.6 var(--font-family);
+  color: var(--muted);
+  border-top: 1px solid var(--border);
+  padding-top: 22px;
+  margin-top: 32px;
+}
+.refs h3 { font-size: 16px; font-weight: 600; color: var(--text); margin-bottom: 8px; }
+.refs ol { padding-left: 22px; }
+.refs li { margin-bottom: 4px; }
+.refs a { color: var(--blue); text-decoration: none; }
+.refs a:hover { text-decoration: underline; }
+.refs .tag {
+  display: inline-block;
+  font-size: 11px;
+  background: var(--light);
+  padding: 0 10px;
+  border-radius: 12px;
+  color: var(--muted);
+  margin-left: 6px;
+}
+
+footer {
+  margin-top: 32px;
+  text-align: center;
+  font: 13px/1.5 var(--font-family);
+  color: var(--muted);
+  border-top: 1px solid var(--border);
+  padding-top: 18px;
+}
+.flex { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+
+.tooltip {
+  position: fixed;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 12px 16px;
+  font: 13px/1.6 var(--font-family);
+  color: var(--text);
+  box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+  pointer-events: none;
+  z-index: 1000;
+  max-width: 280px;
+  opacity: 0;
+  transition: opacity 0.15s;
+}
+.tooltip.visible { opacity: 1; }
+.tooltip .label { font-weight: 600; color: var(--text); }
+.tooltip .detail { color: var(--muted); }
+
+.kv-widget {
+  display: flex;
+  gap: 30px;
+  align-items: flex-end;
+  padding: 16px 0;
+  flex-wrap: wrap;
+}
+.kv-bar {
+  flex: 1;
+  min-width: 120px;
+}
+.kv-bar .bar {
+  height: 20px;
+  border-radius: 4px;
+  margin-top: 4px;
+  transition: width 0.3s ease;
+}
+.kv-bar .bar.transformer { background: var(--red); }
+.kv-bar .bar.bdh { background: var(--blue); }
+.kv-bar .label {
+  font: 12px/1.4 var(--font-family);
+  color: var(--muted);
+  display: flex;
+  justify-content: space-between;
+}
+
+.capacity-meter {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 6px 0;
+}
+.capacity-meter .track {
+  flex: 1;
+  height: 10px;
+  background: var(--border);
+  border-radius: 10px;
+  overflow: hidden;
+  position: relative;
+}
+.capacity-meter .track .fill {
+  height: 100%;
+  border-radius: 10px;
+  transition: width 0.3s ease, background 0.3s ease;
+  background: var(--green);
+}
+.capacity-meter .track .fill.warning { background: var(--orange); }
+.capacity-meter .track .fill.danger { background: var(--red); }
+.capacity-meter .track .theoretical {
+  position: absolute;
+  top: -2px;
+  width: 2px;
+  height: 14px;
+  background: var(--purple);
+  border-radius: 2px;
+}
+.capacity-meter .label {
+  font: 12px/1.4 var(--font-family);
+  color: var(--muted);
+  min-width: 44px;
+}
+</style>
+</head>
+<body>
+<div class="container">
+
+<header>
+  <h1>Synaptic Plasticity as Short-Term Memory
+    <small>Hebbian learning · exponential decay · thresholded recall · the BDH synapse model</small></h1>
+  <div class="toolbar">
+    <button id="themeBtn">Dark</button>
+    <button id="soundBtn">Sound off</button>
+  </div>
+</header>
+
+<div class="audience-strip">
+  <span><strong>For:</strong> ML practitioners comfortable with linear algebra and basic neural-network concepts. No prior knowledge of Hopfield networks or BDH required.</span>
+  <span><strong>Objective:</strong> Understand Hebbian plasticity, the η–λ–θ trade-off, and how this foundational mechanism appears in the Dragon Hatchling (BDH) architecture.</span>
+</div>
+
+<div class="claim">
+  A recurrent network with Hebbian synapses can store and retrieve multiple patterns from partial cues, but the trade-off between learning rate (η) and decay (λ) creates a sharp failure boundary, not a smooth gradient, because thresholding (θ) amplifies the effect of synaptic loss.
+  <div class="prediction-box">
+    <span style="color:var(--muted);font-size:14px;">Before using the model, predict: does recall degrade smoothly or as a sharp cliff?</span>
+    <button id="predictSmooth">Smooth</button>
+    <button id="predictCliff">Sharp cliff</button>
+    <span class="result" id="predictionResult">Make a prediction.</span>
+  </div>
+</div>
+
+<!-- SECTION 1 -->
+<section class="section" id="hook">
+  <h2>1. Flash, store and forget</h2>
+  <p class="desc">
+    The core Hebbian learning rule <span class="citation">[Hebb, 1949]</span> - "neurons that fire together, wire together" -- is formalised as the outer-product update. When a pattern is presented, every pair of co-active neurons increases its synaptic weight by the learning rate η. For active cells <span class="math">i</span> and <span class="math">j</span>, the update is:
+    <span class="eq">Δw<sub>ij</sub> = η · x<sub>i</sub> · x<sub>j</sub></span>
+    where <span class="math">x<sub>i</sub> ∈ {0,1}</span> is the activation of neuron <span class="math">i</span>. This is a local, biologically plausible rule: only synapses connecting two simultaneously active neurons are strengthened, requiring no global error signal. This is the foundational mechanism for associative memory. The network stores three distinct patterns (T, +, L) sequentially. Each store adds a rank-one outer-product matrix to the weight matrix <span class="math">W</span>. Between stores, synaptic decay multiplies every weight by <span class="math">(1 - λ)</span> each tick. The trace of a memory after age <span class="math">t</span> is <span class="math">(1 - λ)<sup>t</sup></span> -- the fraction of the original weight that remains.
+    <br><br>
+    Recall is iterative: starting from a damaged cue, each neuron computes its total input current <span class="math">h<sub>i</sub> = Σ<sub>j≠i</sub> W<sub>ij</sub> x<sub>j</sub></span>, then updates to 1 if <span class="math">h<sub>i</sub> > θ</span>, to 0 if <span class="math">h<sub>i</sub> < θ</span>, or stays unchanged if equal. This is a thresholded linear dynamical system that converges to an attractor corresponding to one of the stored patterns. The page loads with an active demonstration -- watch the patterns being stored, decaying, and recalled.
+  </p>
+  <div class="controls">
+    <button class="primary" id="hookStart">Show three patterns</button>
+    <button id="hookAge">Age 20 ticks</button>
+    <button id="hookReset">Reset</button>
+    <span class="badge" id="hookPhase">auto-playing</span>
+  </div>
+  <p id="hookStatus" class="status">Auto-playing demonstration: storing T, +, L sequentially...</p>
+  <div class="grid2">
+    <div>
+      <h3 style="font:600 16px/1.4 var(--font-family);margin-bottom:4px;">Network state</h3>
+      <div class="canvas-wrap"><canvas id="hookNet"></canvas></div>
+      <div class="legend"><span class="red">T</span><span class="blue">+</span><span class="orange">L</span></div>
+    </div>
+    <div>
+      <h3 style="font:600 16px/1.4 var(--font-family);margin-bottom:4px;">Test a stored memory</h3>
+      <div class="flex">
+        <button data-hook-key="T">Recall T</button>
+        <button data-hook-key="PLUS">Recall +</button>
+        <button data-hook-key="L">Recall L</button>
+      </div>
+      <div class="canvas-wrap"><canvas id="hookResult"></canvas></div>
+      <p id="hookResultText" class="status">Recalled pattern appears here.</p>
+      <table><thead><tr><th>Pattern</th><th>Age</th><th>Trace</th></tr></thead><tbody id="hookTable"></tbody></table>
+    </div>
+  </div>
+</section>
+
+<!-- SECTION 2 -->
+<section class="section" id="write">
+  <h2>2. Hebbian write vs gradient-descent training</h2>
+  <p class="desc">
+    This comparison contrasts local, biologically inspired plasticity with global, error-driven optimisation. The Hebbian network performs a single outer-product update on the pattern T (13 active cells in a 7×7 grid). This strengthens exactly <span class="math">k(k−1) = 13×12 = 156</span> synapses -- a sparse, instantaneous, local write. The gradient-descent network, in contrast, treats the network as a linear autoencoder that must reproduce the input from its own output. For each neuron <span class="math">i</span>, the output is:
+    <span class="eq">ŷ<sub>i</sub> = Σ<sub>j</sub> W<sub>ij</sub> x<sub>j</sub></span>
+    The loss is the mean squared error:
+    <span class="eq">L = (1/N) Σ<sub>i</sub> (x<sub>i</sub> − ŷ<sub>i</sub>)<sup>2</sup></span>
+    The delta-rule update is <span class="math">ΔW<sub>ij</sub> = η<sub>GD</sub> (x<sub>i</sub> − ŷ<sub>i</sub>) x<sub>j</sub></span>, adjusting all 49×49 = 2401 weights each epoch. This comparison illuminates the fundamental trade-off between memory and generalisation. Hebbian learning is extremely efficient for rapid memorisation but lacks generalisation capacity; gradient descent is slower but can interpolate and generalise to unseen inputs. Running 50 GD epochs reduces the loss to near zero, but at the cost of dense computation over many steps.
+  </p>
+  <div class="controls">
+    <button class="primary" id="hebbWrite">One Hebbian write</button>
+    <button id="gdOne">One GD epoch</button>
+    <button id="gdMany">Run 50 GD epochs</button>
+    <button id="writeReset">Reset</button>
+  </div>
+  <div class="grid4">
+    <div>
+      <h3 style="font:600 13px/1.4 var(--font-family);margin-bottom:4px;color:var(--muted);text-align:center;">Hebbian weights</h3>
+      <div class="canvas-wrap"><canvas id="hebbHeat"></canvas></div>
+    </div>
+    <div>
+      <h3 style="font:600 13px/1.4 var(--font-family);margin-bottom:4px;color:var(--muted);text-align:center;">GD weights</h3>
+      <div class="canvas-wrap"><canvas id="gdHeat"></canvas></div>
+    </div>
+    <div>
+      <h3 style="font:600 13px/1.4 var(--font-family);margin-bottom:4px;color:var(--muted);text-align:center;">Hebbian recall</h3>
+      <div class="canvas-wrap"><canvas id="hebbOutput"></canvas></div>
+    </div>
+    <div>
+      <h3 style="font:600 13px/1.4 var(--font-family);margin-bottom:4px;color:var(--muted);text-align:center;">GD recall</h3>
+      <div class="canvas-wrap"><canvas id="gdOutput"></canvas></div>
+    </div>
+  </div>
+  <div style="display:flex;flex-wrap:wrap;gap:20px;margin-top:8px;">
+    <p id="hebbStats" class="status" style="flex:1;min-width:200px;margin:0;">No write yet.</p>
+    <p id="gdStats" class="status" style="flex:1;min-width:200px;margin:0;">No training yet.</p>
+  </div>
+</section>
+
+<!-- SECTION 3 -->
+<section class="section" id="fade">
+  <h2>3. Decay, threshold and the energy landscape</h2>
+  <p class="desc">
+    The interaction between decay rate <span class="math">λ</span> and threshold <span class="math">θ</span> is central to understanding the phase transition in associative memory. As time passes, all weights are multiplied by <span class="math">(1 - λ)</span> each tick, producing exponential decay:
+    <span class="eq">W<sub>ij</sub>(t) = W<sub>ij</sub>(0) · (1 - λ)<sup>t</sup></span>
+    This trace strength decreases smoothly and continuously. However, recall success does not follow this smooth decline. The recall accuracy (fraction of the original pattern's active cells recovered) stays high for a long time, then drops precipitously. The threshold <span class="math">θ</span> introduces a nonlinearity that amplifies small synaptic losses. As long as <span class="math">h<sub>i</sub> > θ</span> for all critical neurons, the pattern is perfectly reconstructed. But once even one critical neuron's input falls below θ, that neuron fails to fire, and the entire pattern collapses -- the network falls into a different attractor. This is a phase transition: a continuous change in weights produces a discontinuous change in recall outcome.
+    <br><br>
+    The 2D energy landscape below visualises the Hopfield energy:
+    <span class="eq">E = −½ Σ<sub>i≠j</sub> W<sub>ij</sub> x<sub>i</sub> x<sub>j</sub> + θ Σ<sub>i</sub> x<sub>i</sub></span>
+    The rolling ball represents the network state, settling into an attractor well (a stored memory). As you drag the time slider, watch the basin flatten -- when the barrier vanishes, the state rolls into the zero attractor, providing a geometric proof of why failure is a cliff, not a smooth slide.
+  </p>
+  <div class="controls">
+    <label>λ <input id="fadeLam" type="range" min=".005" max=".08" step=".0025" value=".03"><span class="value" id="fadeLamValue"></span></label>
+    <label>θ <input id="fadeTheta" type="range" min="1" max="8" step=".25" value="3"><span class="value" id="fadeThetaValue"></span></label>
+    <label>Time <input id="fadeTime" type="range" min="0" max="70" step="1" value="0"><span class="value" id="fadeTimeValue"></span></label>
+  </div>
+  <div class="grid2">
+    <div><div class="canvas-wrap"><canvas id="fadePlot"></canvas></div></div>
+    <div><div class="canvas-wrap"><canvas id="fadeEnergy"></canvas></div></div>
+  </div>
+  <div class="grid2">
+    <div><div class="canvas-wrap"><canvas id="fadePattern"></canvas></div></div>
+    <div><p style="display:flex;justify-content:space-between;font:15px/1.5 var(--font-family);">Trace <strong id="fadeTrace">100%</strong></p><p style="display:flex;justify-content:space-between;font:15px/1.5 var(--font-family);">Recovered <strong id="fadeRecall">—</strong></p><p id="fadeStatus" class="status">Drag the time slider.</p></div>
+  </div>
+  <div class="legend"><span class="red">Recall success</span><span class="blue">Synaptic trace</span></div>
+</section>
+
+<!-- SECTION 4 - Memory Blender with new citation -->
+<section class="section" id="collision">
+  <h2>4. Memory blender: two patterns collide</h2>
+  <p class="desc">
+    Interference in associative memory occurs when two patterns are stored in the same weight matrix. Their contributions add linearly:
+    <span class="eq">W = W<sub>A</sub> + W<sub>B</sub></span>
+    where <span class="math">W<sub>A</sub></span> is the outer-product matrix for pattern A and <span class="math">W<sub>B</sub></span> for pattern B. Each pattern contributes <span class="math">η · (1 - λ)<sup>age</sup></span> to its synapses, scaled by its age. The older pattern has been decaying for longer, so its weights are reduced by <span class="math">(1 - λ)<sup>Δage</sup></span> relative to the newer pattern. When you recall the older pattern, the network's total input includes contributions from both stored patterns, creating cross-talk. Synapses shared between the two patterns receive contributions from both -- which can be beneficial if they align or harmful if they conflict. The difference map shows connection dominance: red synapses are dominated by the older pattern, blue by the newer, and purple by both. Adjusting the age difference changes the relative strength of the two memories. At small age differences, both patterns are strong; at large differences, the newer pattern dominates, and the older pattern becomes increasingly corrupted. This demonstrates the capacity limits of associative memory: with <span class="math">N</span> neurons, a Hopfield network <span class="citation">[Hopfield, 1982]</span> can store approximately <span class="math">0.138 × N</span> orthogonal patterns before interference causes catastrophic forgetting <span class="citation">[Amit et al., 1985]</span>. Recent work by <span class="citation">[Millidge et al., 2024]</span> extends this classical Hopfield framework to a broader class of single-shot associative memory paradigms, providing a unified theoretical perspective on energy-based memory models.
+    <br><br>
+    <strong>Tip:</strong> To see purple squares (shared synapses), select patterns that overlap -- T and + share the vertical line cells.
+  </p>
+  <div class="controls">
+    <label>Older <select id="blendA"><option value="T">T</option><option value="PLUS">+</option><option value="L">L</option></select></label>
+    <label>Newer <select id="blendB"><option value="PLUS">+</option><option value="T">T</option><option value="L">L</option></select></label>
+    <label>Age diff <input id="blendAge" type="range" min="0" max="70" value="0"><span class="value" id="blendAgeValue"></span></label>
+  </div>
+  <div class="grid2">
+    <div><h3 style="font:600 15px/1.4 var(--font-family);margin-bottom:4px;">Recalled older pattern</h3><div class="canvas-wrap"><canvas id="blendResult"></canvas></div><p id="blendStatus" class="status"></p></div>
+    <div><h3 style="font:600 15px/1.4 var(--font-family);margin-bottom:4px;">Connection dominance</h3><div class="canvas-wrap"><canvas id="blendDiff"></canvas></div><p class="note">Red = older, blue = newer, purple = shared synapses.</p></div>
+  </div>
+</section>
+
+<!-- SECTION 5 -->
+<section class="section" id="bdh">
+  <h2>5. The Dragon Hatchling (BDH) synapse model</h2>
+  <p class="desc">
+    The Dragon Hatchling (BDH) architecture <span class="citation">[Pathway, 2025]</span> is a brain-inspired post-Transformer model where reasoning and memory share one computational fabric. At its core is a fast synaptic state that updates with each input token -- a fast-weight memory <span class="citation">[Ba et al., 2016; Schlag et al., 2021]</span>. The update rule, derived from the "From Attention to Synapses" formalism, is:
+    <span class="eq"><span style="font-weight:600;">b<sub>ij</sub>(t) = γ · b<sub>ij</sub>(t−1) + x<sub>i</sub>(t) · x<sub>j</sub>(t)</span></span>
+    where <span class="math">b<sub>ij</sub></span> is the fast synaptic state between neurons <span class="math">i</span> and <span class="math">j</span>, <span class="math">γ</span> is a retention factor (analogous to <span class="math">1 - λ</span>), and <span class="math">x<sub>i</sub>(t) x<sub>j</sub>(t)</span> is the Hebbian outer-product of the current activation vector. This is the same mathematical form as our toy network's update, but BDH implements it at billions of parameters with GPU-optimised linear attention and ReLU-low-rank transformations. The key innovation is coupling: the fast state is updated during every recall (inference) step, not just during explicit storage. This allows the network to learn from context and perform demonstration-based reasoning, as shown in BDH-CQ <span class="citation">[Pathway, 2026]</span>.
+    <br><br>
+    The bridge from classical Hopfield networks to BDH's linear attention is the outer-product update. In Hopfield networks, the weight matrix is a sum of outer products: <span class="math">W = Σ<sub>μ</sub> ξ<sub>μ</sub> ξ<sub>μ</sub><sup>T</sup></span>. BDH generalises this to sequences: <span class="math">b<sub>t</sub> = γ b<sub>t−1</sub> + k<sub>t</sub> v<sub>t</sub><sup>T</sup></span>, where <span class="math">k<sub>t</sub></span> and <span class="math">v<sub>t</sub></span> are key and value vectors derived from the input. The sparsity slider below controls the fraction of non-negative activations -- BDH reportedly uses approximately 5% sparsity <span class="citation">[Pathway, 2025, Table 2]</span>, which prevents cross-talk and improves memory fidelity. The memory footprint comparison below shows how Transformer KV-cache grows linearly with sequence length <span class="math">O(L · d)</span>, while BDH's synaptic state remains fixed <span class="math">O(d<sup>2</sup>)</span>.
+  </p>
+
+  <div class="bdh-reported">
+    <strong>Reported in BDH (from the Dragon Hatchling paper -- not computed live):</strong>
+    <ul>
+      <li>Sparse non-negative activations: approximately 5% of neurons are active at any time <span class="citation">[Pathway, 2025, Table 2]</span>.</li>
+      <li>Monosemantic synapses: individual synapses encode recognisable semantic concepts <span class="citation">[Pathway, 2025, Section 4.1]</span>.</li>
+      <li>Scale-free connectivity: trained BDH models exhibit a power-law degree distribution <span class="citation">[Pathway, 2025, Fig. 5]</span>.</li>
+      <li>Pretraining scaling: experiments from 1B to 600B parameters show predictable scaling laws <span class="citation">[Pathway, 2026, Table 1]</span>.</li>
+    </ul>
+  </div>
+
+  <div class="controls">
+    <label><input id="bdhCoupled" type="checkbox"> Couple writing to reading (BDH-style)</label>
+    <label>Sparsity <input id="bdhSparsity" type="range" min="0" max="20" step="1" value="5"><span class="value" id="bdhSparsityValue">5%</span></label>
+    <button class="primary" id="bdhRun">Recall from cue</button>
+    <button id="bdhReset">Reset</button>
+  </div>
+
+  <div style="background:var(--light);border-radius:6px;padding:16px 20px;margin:12px 0;">
+    <h4 style="font:600 14px/1.4 var(--font-family);color:var(--text);margin-bottom:8px;">Memory footprint: Transformer KV-cache vs BDH synaptic state</h4>
+    <div class="kv-widget">
+      <div class="kv-bar">
+        <div class="label"><span>Transformer KV-cache</span><span id="kvTransformerSize">0</span></div>
+        <div class="bar transformer" id="kvTransformerBar" style="width:0%;"></div>
+      </div>
+      <div class="kv-bar">
+        <div class="label"><span>BDH synaptic state (fixed)</span><span id="kvBDHSize">0</span></div>
+        <div class="bar bdh" id="kvBDHBar" style="width:10%;"></div>
+      </div>
+    </div>
+    <label style="font:12px/1.4 var(--font-family);color:var(--muted);display:flex;align-items:center;gap:8px;">
+      Sequence length <input id="kvSeqLen" type="range" min="1" max="100" value="10" style="width:150px;">
+      <span class="value" id="kvSeqLenValue">10</span>
+    </label>
+  </div>
+
+  <div class="grid3">
+    <div><h3 style="font:600 15px/1.4 var(--font-family);margin-bottom:4px;">Recall result</h3><div class="canvas-wrap"><canvas id="bdhResult"></canvas></div></div>
+    <div><h3 style="font:600 15px/1.4 var(--font-family);margin-bottom:4px;">Synaptic state W</h3><div class="canvas-wrap"><canvas id="bdhHeat"></canvas></div></div>
+    <div><h3 style="font:600 15px/1.4 var(--font-family);margin-bottom:4px;">Outer product x x<sup>T</sup></h3><div class="canvas-wrap"><canvas id="bdhAttention"></canvas></div></div>
+  </div>
+  <p id="bdhStatus" class="status"></p>
+  <p class="note"><strong>Equation reference:</strong> <span class="math">b<sub>ij</sub>(t) = γ · b<sub>ij</sub>(t−1) + x<sub>i</sub>(t) · x<sub>j</sub>(t)</span> <span class="citation">[Pathway, 2025, Eq. 4]</span>. This interactive model re-implements the core Hebbian update at small scale.</p>
+</section>
+
+<!-- SECTION 6 -->
+<section class="section" id="sandbox">
+  <h2>6. Sandbox: draw, store, test</h2>
+  <p class="desc">
+    This fully interactive environment lets you draw custom binary patterns by clicking cells, adjust the learning rate <span class="math">η</span> and decay <span class="math">λ</span>, and observe the effects on memory formation and recall. The network stores the drawn pattern with the given <span class="math">η</span>, creating an outer-product matrix. You can apply a noisy cue (with a controllable erase fraction) and run recall. The <span class="math">η–λ</span> success map shows the region of the hyperparameter space where recall succeeds (at least 85% recovery) after 40 ticks of decay. This is a phase diagram that reveals the boundary between the memory regime and the forgetting regime. Hover over any neuron or synapse on the heatmap or network visualisation to see its exact weight value, trace, and contributing patterns. This makes the internal state directly inspectable -- a key aspect of state interpretability.
+  </p>
+  <div class="controls">
+    <label>Grid <select id="sandboxSize"><option value="49">7×7</option><option value="100">10×10</option><option value="400">20×20</option></select></label>
+    <label>η <input id="sandboxEta" type="range" min=".2" max="1.6" step=".05" value="1"><span class="value" id="sandboxEtaValue"></span></label>
+    <label>λ <input id="sandboxLam" type="range" min="0" max=".08" step=".005" value=".03"><span class="value" id="sandboxLamValue"></span></label>
+    <label>Erase <input id="sandboxNoise" type="range" min=".05" max=".7" step=".05" value=".3"><span class="value" id="sandboxNoiseValue"></span></label>
+  </div>
+  <div class="grid2">
+    <div>
+      <h3 style="font:600 15px/1.4 var(--font-family);margin-bottom:4px;">Draw pattern <span style="font-weight:400;color:var(--muted);font-size:13px;">(click cells)</span></h3>
+      <div class="canvas-wrap"><canvas id="sandboxDraw"></canvas></div>
+      <div class="flex">
+        <button id="sandboxPreset">Load T</button>
+        <button id="sandboxClear">Clear</button>
+        <button class="primary" id="sandboxStore">Store</button>
+        <button id="sandboxRecall">Recall</button>
+        <button id="sandboxAge">Age 20</button>
+        <button id="sandboxReset">Reset memory</button>
+      </div>
+      <p id="sandboxStatus" class="status">Draw cells or load T. Hover for synapse details.</p>
+    </div>
+    <div>
+      <h3 style="font:600 15px/1.4 var(--font-family);margin-bottom:4px;">Network <span style="font-weight:400;color:var(--muted);font-size:13px;">(hover for weights)</span></h3>
+      <div class="canvas-wrap"><canvas id="sandboxNet"></canvas></div>
+      <div class="canvas-wrap"><canvas id="sandboxHeat"></canvas></div>
+    </div>
+  </div>
+  <hr>
+
+  <div class="grid2">
+    <div>
+      <h3 style="font:600 15px/1.4 var(--font-family);margin-bottom:4px;">η–λ success map</h3>
+      <div class="canvas-wrap"><canvas id="phaseMap"></canvas></div>
+      <button id="phaseRecompute">Recompute map</button>
+      <p class="note">Green = at least 85% recovery after 40 ticks <span class="citation">[Hopfield, 1982]</span>.</p>
+    </div>
+    <div>
+      <h3 style="font:600 15px/1.4 var(--font-family);margin-bottom:4px;">Memory Interference Analyzer</h3>
+      <div class="controls" style="margin-bottom:6px;">
+        <button id="interferenceAdd">Add random pattern</button>
+        <button id="interferenceClear">Clear all</button>
+        <span class="badge" id="interferenceCount">0 patterns</span>
+      </div>
+      <div class="canvas-wrap"><canvas id="interferenceHeatmap"></canvas></div>
+      <div class="capacity-meter">
+        <span class="label" style="min-width:60px;">Capacity</span>
+        <div class="track">
+          <div class="fill" id="capacityFill" style="width:0%;"></div>
+          <div class="theoretical" id="capacityTheoretical" style="left:0%;"></div>
+        </div>
+        <span class="label" id="capacityPercent">0%</span>
+      </div>
+      <p id="interferenceStatus" class="status" style="font-size:13px;">Add patterns to see interference.</p>
+    </div>
+  </div>
+
+  <div class="grid3">
+    <div><b style="font:600 14px/1.4 var(--font-family);">Challenge A</b><p style="font-size:14px;color:var(--muted);">Store with weak η, make recall fail.</p><button id="checkA">Check A</button><p id="checkAResult" class="note"></p></div>
+    <div><b style="font:600 14px/1.4 var(--font-family);">Challenge B</b><p style="font-size:14px;color:var(--muted);">Store two low-overlap patterns, test both.</p><button id="checkB">Check B</button><p id="checkBResult" class="note"></p></div>
+    <div><b style="font:600 14px/1.4 var(--font-family);">Challenge C</b><p style="font-size:14px;color:var(--muted);">Work at 10 ticks, fail at 40.</p><button id="checkC">Check C</button><p id="checkCResult" class="note"></p></div>
+  </div>
+</section>
+
+<!-- SECTION 7 -->
+<section class="section" id="quiz">
+  <h2>7. Parameter-based tasks</h2>
+  <p class="desc">
+    These tasks require you to use the model interactively to discover answers, demonstrating active learning rather than passive consumption. Task A asks you to find a decay rate <span class="math">λ</span> that causes the first failure near <span class="math">t = 30</span>. Task B diagnoses whether a failed recall is due to cue damage, decay, or interference -- a causal attribution task. Task C tests a theoretical limitation: with only three active cells and <span class="math">θ = 3</span>, a missing cell cannot receive enough input to cross the threshold. These tasks transform the tool from a passive demonstration into an active learning environment, directly testing the falsifiable claim that the η–λ–θ trade-off creates sharp failure boundaries.
+  </p>
+  <div style="display:grid; grid-template-columns:1fr 1fr; gap:20px;">
+    <div>
+      <h3 style="font:600 16px/1.4 var(--font-family);margin-bottom:4px;">Task A – find failure near 30 ticks</h3>
+      <label style="font:14px/1.5 var(--font-family);color:var(--muted);">λ <input id="quizLam" type="range" min=".005" max=".08" step=".0025" value=".04"><span class="value" id="quizLamValue"></span></label>
+      <button id="quizCheckA">Check</button>
+      <p id="quizResultA" class="status">Choose λ and check.</p>
+    </div>
+    <div>
+      <h3 style="font:600 16px/1.4 var(--font-family);margin-bottom:4px;">Task B – diagnose failure cause</h3>
+      <p style="font-size:14px;color:var(--muted);">A fresh memory is cued with 70% erased. Which failure is most likely?</p>
+      <div class="flex">
+        <button data-diagnosis="noise">Too much cue damage</button>
+        <button data-diagnosis="decay">Too much decay</button>
+        <button data-diagnosis="interference">Pattern interference</button>
+      </div>
+      <p id="diagnosisResult" class="status"></p>
+    </div>
+    <div style="grid-column:1/3;">
+      <h3 style="font:600 16px/1.4 var(--font-family);margin-bottom:4px;">Task C – threshold limitation</h3>
+      <p style="font-size:14px;color:var(--muted);">A pattern with only 3 active neurons stored with η = 1, λ = 0. Can it reconstruct an erased cell when θ = 3?</p>
+      <button id="quizCheckC">Run experiment</button>
+      <p id="quizResultC" class="status">The answer will be computed.</p>
+    </div>
+  </div>
+</section>
+
+<div class="misconception">
+  <strong>Common misconception:</strong> "More decay always means gradual forgetting."<br>
+  This is false for thresholded recurrent networks. As shown in Section 3, the trace decays smoothly (exponentially), but recall fails <span class="highlight">abruptly</span> when the input to any critical neuron falls below θ. The threshold amplifies small synaptic losses into complete pattern collapse -- a phase transition rather than a gradual fade.
+</div>
+
+<div class="limits">
+  <strong>Limitations of this interactive model:</strong> 49 neurons vs. BDH's billions; simple threshold (McCulloch-Pitts) vs. BDH's ReLU-low-rank dynamics; no pretraining or gradient optimisation; short sequences only; all results are computed live in your browser and illustrate the mechanism, not official BDH benchmarks. This is an educational implementation designed to make the core principles accessible.
+</div>
+
+<div class="refs">
+  <h3>References</h3>
+  <ol>
+    <li>Hebb, D.O. (1949). <em>The Organization of Behavior.</em> Wiley. <a href="https://archive.org/details/in.ernet.dli.2015.168156" target="_blank">Internet Archive</a></li>
+    <li>McCulloch, W.S. &amp; Pitts, W. (1943). A logical calculus of the ideas immanent in nervous activity. <em>Bulletin of Mathematical Biophysics</em> 5(4), 115-133. <a href="https://doi.org/10.1007/BF02478259" target="_blank">doi:10.1007/BF02478259</a></li>
+    <li>Hopfield, J.J. (1982). Neural networks and physical systems with emergent collective computational abilities. <em>PNAS</em> 79(8), 2554-2558. <a href="https://doi.org/10.1073/pnas.79.8.2554" target="_blank">doi:10.1073/pnas.79.8.2554</a> <span class="tag">foundational</span></li>
+    <li>Amit, D.J., Gutfreund, H., &amp; Sompolinsky, H. (1985). Storing infinite numbers of patterns in a spin-glass model of neural networks. <em>Physical Review Letters</em> 55(14), 1530-1533. <a href="https://doi.org/10.1103/PhysRevLett.55.1530" target="_blank">doi:10.1103/PhysRevLett.55.1530</a> <span class="tag">capacity</span></li>
+    <li>Millidge, B., Song, Y., Bogacz, S., Lukasiewicz, T., &amp; Bogacz, R. (2024). Universal Hopfield Networks: A General Framework for Single-Shot Associative Memory Paradigms. <em>Neural Networks.</em> <a href="https://arxiv.org/abs/2202.04557" target="_blank">arXiv:2206.09455</a> <span class="tag">universal Hopfield</span></li>
+    <li>Ba, J., Hinton, G., Mnih, V., Leibo, J.Z., &amp; Ionescu, C. (2016). Using Fast Weights to Attend to the Recent Past. <em>NeurIPS 2016</em>. <a href="https://arxiv.org/abs/1610.06258" target="_blank">arXiv:1610.06258</a> <span class="tag">fast weights</span></li>
+    <li>Ramsauer, H., et al. (2020). Hopfield Networks is All You Need. <em>ICLR 2021</em>. <a href="https://arxiv.org/abs/2008.02217" target="_blank">arXiv:2008.02217</a> <span class="tag">modern Hopfield</span></li>
+    <li>Schlag, S., Irie, K., &amp; Schmidhuber, J. (2021). Linear Transformers Are Secretly Fast Weight Programmers. <em>ICML 2021</em>. <a href="https://arxiv.org/abs/2102.11174" target="_blank">arXiv:2102.11174</a> <span class="tag">linear attention</span></li>
+    <li>Sun, Y., et al. (2024). Learning to (Learn at Test Time): RNNs with Expressive Hidden States. <em>NeurIPS 2024</em>. <a href="https://arxiv.org/abs/2407.04620" target="_blank">arXiv:2407.04620</a> <span class="tag">test-time adaptation</span></li>
+    <li>Pathway (2025). <em>The Dragon Hatchling: The Missing Link between the Transformer and Models of the Brain</em>. <a href="https://arxiv.org/abs/2509.26507" target="_blank">arXiv:2509.26507</a> <span class="tag">primary BDH</span></li>
+    <li>Pathway (2026). <em>BDH-CQ: In-Context Learning with Recurrent Latent Reasoning</em> (technical report). <a href="https://arxiv.org/abs/2608.09888" target="_blank">arXiv:2608.09888</a> <span class="tag">BDH-CQ</span></li>
+  </ol>
+</div>
+
+<footer>
+  Inspired by Hebb (1949), Hopfield (1982), and the Dragon Hatchling architecture (Pathway, 2025).
+</footer>
+
+</div>
+
+<div class="tooltip" id="tooltip">
+  <div class="label" id="tooltipLabel">Neuron</div>
+  <div class="detail" id="tooltipDetail">Weight: 0.00</div>
+</div>
+
+<script>
+"use strict";
+var $ = function(id) { return document.getElementById(id); };
+var N49 = 49, SIDE49 = 7;
+
+function mulberry32(seed) {
+  return function() {
+    seed |= 0;
+    seed = seed + 0x6D2B79F5 | 0;
+    var t = Math.imul(seed ^ seed >>> 15, 1 | seed);
+    t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t;
+    return ((t ^ t >>> 14) >>> 0) / 4294967296;
+  };
+}
+
+function setupCanvas(canvas, w, h) {
+  var dpr = window.devicePixelRatio || 1;
+  canvas.width = Math.round(w * dpr);
+  canvas.height = Math.round(h * dpr);
+  canvas.style.width = w + "px";
+  canvas.style.height = h + "px";
+  var ctx = canvas.getContext("2d");
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  ctx.logicalWidth = w;
+  ctx.logicalHeight = h;
+  return ctx;
+}
+
+function clear(ctx) { ctx.clearRect(0, 0, ctx.logicalWidth, ctx.logicalHeight); }
+
+function makePattern(rows) {
+  var side = rows.length;
+  var d = new Float32Array(side * side);
+  var cells = [];
+  for (var r = 0; r < side; r++) {
+    for (var c = 0; c < side; c++) {
+      if (rows[r][c] === "#") { d[r * side + c] = 1; cells.push(r * side + c); }
+    }
+  }
+  return { d: d, cells: cells, side: side };
+}
+
+var PAT = {
+  T: { name: "T", color: "#c0392b", d: null, cells: null, side: 7 },
+  PLUS: { name: "+", color: "#2c6bcf", d: null, cells: null, side: 7 },
+  L: { name: "L", color: "#d48c2c", d: null, cells: null, side: 7 }
+};
+var tData = makePattern([
+  "#######", "...#...", "...#...", "...#...", "...#...", "...#...", "...#..."
+]);
+PAT.T.d = tData.d; PAT.T.cells = tData.cells; PAT.T.side = tData.side;
+var plusData = makePattern([
+  "...#...", "...#...", "...#...", "#######", "...#...", "...#...", "...#..."
+]);
+PAT.PLUS.d = plusData.d; PAT.PLUS.cells = plusData.cells; PAT.PLUS.side = plusData.side;
+var lData = makePattern([
+  "#......", "#......", "#......", "#......", "#......", "#......", "#######"
+]);
+PAT.L.d = lData.d; PAT.L.cells = lData.cells; PAT.L.side = lData.side;
+
+var BITS = { T: 1, PLUS: 2, L: 4, CUSTOM: 8 };
+
+function copyPattern(p) { return { d: Float32Array.from(p.d), cells: p.cells.slice(), side: p.side }; }
+
+function erasedCue(pattern, fraction, rng) {
+  var cue = Float32Array.from(pattern.d);
+  var cells = pattern.cells.slice();
+  for (var i = cells.length - 1; i > 0; i--) {
+    var j = Math.floor(rng() * (i + 1));
+    var tmp = cells[i]; cells[i] = cells[j]; cells[j] = tmp;
+  }
+  var count = Math.round(cells.length * fraction);
+  for (var k = 0; k < count; k++) cue[cells[k]] = 0;
+  return cue;
+}
+
+function recovered(state, pattern) {
+  if (!pattern.cells.length) return 0;
+  var count = 0;
+  for (var i = 0; i < pattern.cells.length; i++) {
+    if (state[pattern.cells[i]] > 0.5) count++;
+  }
+  return count / pattern.cells.length;
+}
+
+function falseOn(state, pattern) {
+  var count = 0;
+  for (var i = 0; i < state.length; i++) {
+    if (pattern.d[i] < 0.5 && state[i] > 0.5) count++;
+  }
+  return count;
+}
+
+function HebbNet(n, lam, theta) {
+  if (lam === undefined) lam = 0.03;
+  if (theta === undefined) theta = 3;
+  this.n = n;
+  this.lam = lam;
+  this.theta = theta;
+  this.W = new Float32Array(n * n);
+  this.owner = new Uint8Array(n * n);
+  this.state = new Float32Array(n);
+  this.events = [];
+  this.t = 0;
+}
+HebbNet.prototype.store = function(pattern, eta, label, bit) {
+  if (eta === undefined) eta = 1;
+  if (label === undefined) label = "memory";
+  if (bit === undefined) bit = 8;
+  var cells = pattern.cells;
+  for (var i = 0; i < cells.length; i++) {
+    for (var j = 0; j < cells.length; j++) {
+      if (cells[i] === cells[j]) continue;
+      var k = cells[i] * this.n + cells[j];
+      this.W[k] += eta;
+      this.owner[k] |= bit;
+    }
+  }
+  this.events.push({ t: this.t, eta: eta, label: label, pattern: copyPattern(pattern) });
+  this.state.set(pattern.d);
+};
+HebbNet.prototype.writeState = function(x, eta, bit) {
+  if (eta === undefined) eta = 1;
+  if (bit === undefined) bit = 8;
+  for (var i = 0; i < this.n; i++) {
+    if (x[i] <= 0.5) continue;
+    for (var j = 0; j < this.n; j++) {
+      if (i === j || x[j] <= 0.5) continue;
+      var k = i * this.n + j;
+      this.W[k] += eta;
+      this.owner[k] |= bit;
+    }
+  }
+};
+HebbNet.prototype.decay = function(count) {
+  if (count === undefined) count = 1;
+  var factor = 1 - this.lam;
+  for (var step = 0; step < count; step++) {
+    for (var i = 0; i < this.W.length; i++) this.W[i] *= factor;
+    this.t++;
+  }
+};
+HebbNet.prototype.recall = function(cue, maxSteps, coupled, eta) {
+  if (maxSteps === undefined) maxSteps = 14;
+  if (coupled === undefined) coupled = false;
+  if (eta === undefined) eta = 0.1;
+  var x = Float32Array.from(cue);
+  var history = [x.slice()];
+  var frames = [];
+  var writes = 0;
+  for (var step = 0; step < maxSteps; step++) {
+    var currents = new Float32Array(this.n);
+    var next = new Float32Array(this.n);
+    var same = true;
+    for (var i = 0; i < this.n; i++) {
+      var h = 0;
+      var base = i * this.n;
+      for (var j = 0; j < this.n; j++) {
+        if (i !== j) h += this.W[base + j] * x[j];
+      }
+      currents[i] = h;
+      next[i] = h > this.theta ? 1 : (h < this.theta ? 0 : x[i]);
+      if (next[i] !== x[i]) same = false;
+    }
+    frames.push({ before: x.slice(), currents: currents, next: next.slice() });
+    if (coupled) {
+      this.writeState(next, eta, 8);
+      var active = 0;
+      for (var a = 0; a < next.length; a++) if (next[a] > 0.5) active++;
+      writes += active;
+    }
+    x = next;
+    history.push(x.slice());
+    if (same) break;
+  }
+  this.state.set(x);
+  return { history: history, frames: frames, final: x, steps: history.length - 1, writes: writes };
+};
+
+function buildSingleWeight(pattern, eta, lam, age, n) {
+  if (n === undefined) n = pattern.d.length;
+  var W = new Float32Array(n * n);
+  var scale = eta * Math.pow(1 - lam, age);
+  for (var i = 0; i < pattern.cells.length; i++) {
+    for (var j = 0; j < pattern.cells.length; j++) {
+      if (pattern.cells[i] !== pattern.cells[j]) {
+        W[pattern.cells[i] * n + pattern.cells[j]] += scale;
+      }
+    }
+  }
+  return W;
+}
+
+function runRecall(W, n, cue, theta, maxSteps) {
+  if (theta === undefined) theta = 3;
+  if (maxSteps === undefined) maxSteps = 14;
+  var temp = new HebbNet(n, 0, theta);
+  temp.W = W;
+  return temp.recall(cue, maxSteps, false, 0);
+}
+
+function patternFromVector(d, side) {
+  var cells = [];
+  for (var i = 0; i < d.length; i++) if (d[i] > 0.5) cells.push(i);
+  return { d: Float32Array.from(d), cells: cells, side: side };
+}
+
+function drawGrid(ctx, arr, side, color) {
+  if (color === undefined) color = "#2c6bcf";
+  clear(ctx);
+  var w = ctx.logicalWidth;
+  var cell = w / side;
+  ctx.fillStyle = "#f0f0f0";
+  ctx.fillRect(0, 0, w, w);
+  for (var i = 0; i < arr.length; i++) {
+    var x = (i % side) * cell;
+    var y = Math.floor(i / side) * cell;
+    ctx.fillStyle = arr[i] > 0.5 ? color : "#ffffff";
+    ctx.fillRect(x + 1, y + 1, cell - 2, cell - 2);
+    ctx.strokeStyle = "#d0d0d0";
+    ctx.strokeRect(x + 1, y + 1, cell - 2, cell - 2);
+  }
+}
+
+function drawHeat(ctx, W, n, maxValue) {
+  if (maxValue === undefined) maxValue = 3.2;
+  clear(ctx);
+  var size = ctx.logicalWidth;
+  var cell = size / n;
+  for (var i = 0; i < n; i++) {
+    for (var j = 0; j < n; j++) {
+      var v = Math.max(0, Math.min(1, W[i * n + j] / maxValue));
+      var r = 255;
+      var g = Math.round(255 - 190 * v);
+      var b = Math.round(255 - 200 * v);
+      ctx.fillStyle = "rgb(" + r + "," + g + "," + b + ")";
+      ctx.fillRect(j * cell, i * cell, cell + 0.5, cell + 0.5);
+    }
+  }
+}
+
+function drawDifference(ctx, WA, WB, n, maxValue) {
+  if (maxValue === undefined) maxValue = 3;
+  clear(ctx);
+  var size = ctx.logicalWidth;
+  var cell = size / n;
+  var sharedCount = 0;
+  var totalSignificant = 0;
+  for (var i = 0; i < n; i++) {
+    for (var j = 0; j < n; j++) {
+      var a = WA[i * n + j];
+      var b = WB[i * n + j];
+      var absA = Math.abs(a);
+      var absB = Math.abs(b);
+      if (absA > 0.001 || absB > 0.001) totalSignificant++;
+      if (absA > 0.005 && absB > 0.005) sharedCount++;
+
+      if (absA > 0.005 && absB > 0.005) {
+        var v = Math.min(1, (absA + absB) / maxValue);
+        var r = Math.round(180 + 55 * v);
+        var g = Math.round(80 + 50 * v);
+        var b2 = Math.round(220 + 35 * v);
+        ctx.fillStyle = "rgb(" + r + "," + g + "," + b2 + ")";
+      } else if (absA > absB) {
+        var v2 = Math.min(1, absA / maxValue);
+        ctx.fillStyle = "rgb(255," + Math.round(235 - 180 * v2) + "," + Math.round(230 - 180 * v2) + ")";
+      } else if (absB > absA) {
+        var v3 = Math.min(1, absB / maxValue);
+        ctx.fillStyle = "rgb(" + Math.round(230 - 160 * v3) + "," + Math.round(235 - 140 * v3) + ",255)";
+      } else {
+        ctx.fillStyle = "#ffffff";
+      }
+      ctx.fillRect(j * cell, i * cell, cell + 0.5, cell + 0.5);
+    }
+  }
+  return { sharedCount: sharedCount, totalSignificant: totalSignificant };
+}
+
+function drawOuter(ctx, x, n) {
+  var W = new Float32Array(n * n);
+  for (var i = 0; i < n; i++) {
+    for (var j = 0; j < n; j++) {
+      if (i !== j) W[i * n + j] = x[i] * x[j];
+    }
+  }
+  drawHeat(ctx, W, n, 1);
+}
+
+function drawNetwork(ctx, net) {
+  clear(ctx);
+  var n = net.n;
+  var side = Math.round(Math.sqrt(n));
+  var size = ctx.logicalWidth;
+  var pad = 24;
+  var step = (size - 2 * pad) / (side - 1);
+  function point(i) {
+    return [pad + (i % side) * step, pad + Math.floor(i / side) * step];
+  }
+  if (n <= 100) {
+    ctx.lineCap = "round";
+    for (var i = 0; i < n; i++) {
+      for (var j = i + 1; j < n; j++) {
+        var w = net.W[i * n + j];
+        if (w < 0.04) continue;
+        var a = point(i);
+        var b = point(j);
+        ctx.globalAlpha = Math.min(0.85, 0.1 + w * 0.3);
+        ctx.strokeStyle = "#7d4fa8";
+        ctx.lineWidth = Math.min(4, 0.5 + w);
+        ctx.beginPath();
+        ctx.moveTo(a[0], a[1]);
+        ctx.lineTo(b[0], b[1]);
+        ctx.stroke();
+      }
+    }
+    ctx.globalAlpha = 1;
+  }
+  for (var i2 = 0; i2 < n; i2++) {
+    var p = point(i2);
+    ctx.beginPath();
+    ctx.arc(p[0], p[1], n <= 100 ? 10 : 4, 0, Math.PI * 2);
+    ctx.fillStyle = net.state[i2] > 0.5 ? "#27ae60" : "#ffffff";
+    ctx.fill();
+    ctx.strokeStyle = "#c0c0c0";
+    ctx.stroke();
+  }
+}
+
+function drawBars(ctx, currents, active, theta) {
+  clear(ctx);
+  var w = ctx.logicalWidth;
+  var h = ctx.logicalHeight;
+  ctx.fillStyle = "#777";
+  ctx.font = "12px " + getComputedStyle(document.body).fontFamily;
+  ctx.fillText("input current", 6, 16);
+  var max = theta + 1;
+  for (var i = 0; i < currents.length; i++) {
+    if (currents[i] > max) max = currents[i];
+  }
+  var barW = Math.max(2, (w - 20) / currents.length - 1);
+  ctx.strokeStyle = "#c0392b";
+  ctx.setLineDash([4, 4]);
+  var thresholdY = h - 20 - (theta / max) * (h - 40);
+  ctx.beginPath();
+  ctx.moveTo(6, thresholdY);
+  ctx.lineTo(w - 6, thresholdY);
+  ctx.stroke();
+  ctx.setLineDash([]);
+  for (var i2 = 0; i2 < currents.length; i2++) {
+    var value = Math.max(0, currents[i2]);
+    var bh = (value / max) * (h - 40);
+    var x = 6 + i2 * (barW + 1);
+    var y = h - 20 - bh;
+    ctx.fillStyle = (active && active[i2] > 0.5) ? "#2c6bcf" : "#d0d0d0";
+    ctx.fillRect(x, y, barW, bh);
+  }
+  ctx.fillStyle = "#c0392b";
+  ctx.fillText("θ = " + theta, 6, h - 5);
+}
+
+function drawPlot(ctx, trace, recall, time) {
+  clear(ctx);
+  var w = ctx.logicalWidth;
+  var h = ctx.logicalHeight;
+  var left = 38;
+  var right = 10;
+  var top = 12;
+  var bottom = 28;
+  function px(t) { return left + (t / 70) * (w - left - right); }
+  function py(v) { return top + (1 - v) * (h - top - bottom); }
+  ctx.strokeStyle = "#ddd";
+  ctx.lineWidth = 1;
+  for (var v = 0; v <= 1; v += 0.5) {
+    ctx.beginPath();
+    ctx.moveTo(left, py(v));
+    ctx.lineTo(w - right, py(v));
+    ctx.stroke();
+    ctx.fillStyle = "#777";
+    ctx.font = "10px " + getComputedStyle(document.body).fontFamily;
+    ctx.fillText(Math.round(v * 100) + "%", 2, py(v) + 4);
+  }
+  for (var t = 0; t <= 70; t += 10) {
+    ctx.fillText(String(t), px(t) - 4, h - 6);
+  }
+  ctx.strokeStyle = "#2c6bcf";
+  ctx.lineWidth = 2;
+  ctx.setLineDash([4, 4]);
+  ctx.beginPath();
+  for (var t2 = 0; t2 < trace.length; t2++) {
+    if (t2 === 0) ctx.moveTo(px(t2), py(trace[t2]));
+    else ctx.lineTo(px(t2), py(trace[t2]));
+  }
+  ctx.stroke();
+  ctx.setLineDash([]);
+  ctx.strokeStyle = "#c0392b";
+  ctx.lineWidth = 2.5;
+  ctx.beginPath();
+  for (var t3 = 0; t3 < recall.length; t3++) {
+    if (t3 === 0) ctx.moveTo(px(t3), py(recall[t3]));
+    else ctx.lineTo(px(t3), py(recall[t3]));
+  }
+  ctx.stroke();
+  ctx.strokeStyle = "#1a1a1a";
+  ctx.beginPath();
+  ctx.moveTo(px(time), top);
+  ctx.lineTo(px(time), h - bottom);
+  ctx.stroke();
+}
+
+function drawEnergyLandscape(ctx, W, n, state, theta, time) {
+  clear(ctx);
+  var w = ctx.logicalWidth;
+  var h = ctx.logicalHeight;
+  var pad = 30;
+  var size = Math.min(w, h) - 2 * pad;
+  var ox = (w - size) / 2;
+  var oy = (h - size) / 2;
+  var steps = 30;
+  var cell = size / steps;
+  var p1 = 0, p2 = 1;
+  if (W.length >= 49) {
+    var patterns = [];
+    for (var i = 0; i < 49; i++) {
+      var rowSum = 0;
+      for (var j = 0; j < 49; j++) rowSum += Math.abs(W[i * 49 + j]);
+      if (rowSum > 0.5) patterns.push(i);
+    }
+    if (patterns.length >= 2) {
+      p1 = patterns[0];
+      p2 = patterns[1];
+    }
+  }
+  var energies = [];
+  var minE = Infinity, maxE = -Infinity;
+  for (var i2 = 0; i2 < steps; i2++) {
+    var row = [];
+    for (var j2 = 0; j2 < steps; j2++) {
+      var x = new Float32Array(n);
+      var a1 = (i2 / steps) * 2 - 1;
+      var a2 = (j2 / steps) * 2 - 1;
+      if (p1 < n) x[p1] = Math.max(0, a1);
+      if (p2 < n) x[p2] = Math.max(0, a2);
+      var sum = 0;
+      for (var k = 0; k < n; k++) sum += x[k];
+      if (sum > 0) { for (var k2 = 0; k2 < n; k2++) x[k2] /= sum; }
+      var e = 0;
+      for (var a = 0; a < n; a++) {
+        for (var b = 0; b < n; b++) {
+          if (a !== b) e += W[a * n + b] * x[a] * x[b];
+        }
+      }
+      e = -0.5 * e + theta * x.reduce(function(s, v) { return s + v; }, 0);
+      row.push(e);
+      if (e < minE) minE = e;
+      if (e > maxE) maxE = e;
+    }
+    energies.push(row);
+  }
+  var range = maxE - minE || 1;
+  for (var i3 = 0; i3 < steps; i3++) {
+    for (var j3 = 0; j3 < steps; j3++) {
+      var v2 = (energies[i3][j3] - minE) / range;
+      var r2 = Math.round(255 * (1 - v2));
+      var g2 = Math.round(255 * (1 - v2 * 0.7));
+      var b2 = Math.round(255 * (1 - v2 * 0.3));
+      ctx.fillStyle = "rgb(" + r2 + "," + g2 + "," + b2 + ")";
+      ctx.fillRect(ox + i3 * cell, oy + j3 * cell, cell + 0.5, cell + 0.5);
+    }
+  }
+  var cx = 0.5, cy = 0.5;
+  if (state && state.length > 0) {
+    var s1 = state[p1] || 0;
+    var s2 = state[p2] || 0;
+    cx = (s1 + 1) / 2;
+    cy = (s2 + 1) / 2;
+  }
+  cx = Math.max(0.05, Math.min(0.95, cx));
+  cy = Math.max(0.05, Math.min(0.95, cy));
+  var storedPatterns = [];
+  if (W.length >= 49) {
+    for (var i4 = 0; i4 < 49; i4++) {
+      var rowSum2 = 0;
+      for (var j4 = 0; j4 < 49; j4++) rowSum2 += Math.abs(W[i4 * 49 + j4]);
+      if (rowSum2 > 1) storedPatterns.push(i4);
+    }
+  }
+  for (var k3 = 0; k3 < Math.min(storedPatterns.length, 3); k3++) {
+    var idx2 = storedPatterns[k3];
+    var sx = (idx2 % 7) / 7;
+    var sy = Math.floor(idx2 / 7) / 7;
+    ctx.beginPath();
+    ctx.arc(ox + sx * size, oy + sy * size, 6, 0, Math.PI * 2);
+    ctx.fillStyle = "rgba(124, 77, 168, 0.3)";
+    ctx.fill();
+    ctx.strokeStyle = "rgba(124, 77, 168, 0.5)";
+    ctx.lineWidth = 1;
+    ctx.stroke();
+  }
+  var bx = ox + cx * size;
+  var by = oy + cy * size;
+  var grad = ctx.createRadialGradient(bx - 4, by - 4, 2, bx, by, 12);
+  grad.addColorStop(0, "#2c6bcf");
+  grad.addColorStop(1, "#1a4a8a");
+  ctx.beginPath();
+  ctx.arc(bx, by, 10, 0, Math.PI * 2);
+  ctx.fillStyle = grad;
+  ctx.fill();
+  ctx.strokeStyle = "#ffffff";
+  ctx.lineWidth = 2;
+  ctx.stroke();
+  ctx.fillStyle = "#777";
+  ctx.font = "10px " + getComputedStyle(document.body).fontFamily;
+  ctx.fillText("pattern 1", ox + 2, oy + size + 14);
+  ctx.fillText("pattern 2", ox + 2, oy + 12);
+}
+
+function drawInterferenceHeatmap(ctx, patterns, n, side) {
+  clear(ctx);
+  var size = ctx.logicalWidth;
+  var m = patterns.length;
+  if (m === 0) {
+    ctx.fillStyle = "#777";
+    ctx.font = "14px " + getComputedStyle(document.body).fontFamily;
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.fillText("No patterns stored", size / 2, size / 2 + 5);
+    return;
+  }
+  var cell = size / m;
+  var maxOverlap = 0;
+  var overlaps = [];
+  for (var i = 0; i < m; i++) {
+    overlaps[i] = [];
+    for (var j = 0; j < m; j++) {
+      if (i === j) { overlaps[i][j] = 1; continue; }
+      var dot = 0;
+      var normA = 0, normB = 0;
+      for (var k = 0; k < patterns[i].length; k++) {
+        dot += patterns[i][k] * patterns[j][k];
+        normA += patterns[i][k] * patterns[i][k];
+        normB += patterns[j][k] * patterns[j][k];
+      }
+      var overlap = normA > 0 && normB > 0 ? dot / (Math.sqrt(normA) * Math.sqrt(normB)) : 0;
+      overlaps[i][j] = overlap;
+      if (Math.abs(overlap) > maxOverlap) maxOverlap = Math.abs(overlap);
+    }
+  }
+  maxOverlap = Math.max(maxOverlap, 0.1);
+  for (var i2 = 0; i2 < m; i2++) {
+    for (var j2 = 0; j2 < m; j2++) {
+      var v = overlaps[i2][j2] / maxOverlap;
+      var r, g, b;
+      if (v > 0) {
+        r = Math.round(255 * (1 - v * 0.7));
+        g = Math.round(255);
+        b = Math.round(255 * (1 - v * 0.7));
+      } else {
+        r = Math.round(255);
+        g = Math.round(255 * (1 + v * 0.7));
+        b = Math.round(255 * (1 + v * 0.7));
+      }
+      ctx.fillStyle = "rgb(" + r + "," + g + "," + b + ")";
+      ctx.fillRect(j2 * cell, i2 * cell, cell + 0.5, cell + 0.5);
+      if (i2 === j2) {
+        ctx.fillStyle = "rgba(0,0,0,0.3)";
+        ctx.font = (cell > 20 ? "10px" : "6px") + " " + getComputedStyle(document.body).fontFamily;
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
+        ctx.fillText((i2 + 1), j2 * cell + cell / 2, i2 * cell + cell / 2);
+      }
+    }
+  }
+  ctx.fillStyle = "#777";
+  ctx.font = "10px " + getComputedStyle(document.body).fontFamily;
+  ctx.textAlign = "center";
+  ctx.textBaseline = "top";
+  ctx.fillText("Patterns", size / 2, size - 14);
+  ctx.save();
+  ctx.translate(10, size / 2);
+  ctx.rotate(-Math.PI / 2);
+  ctx.fillText("Patterns", 0, 0);
+  ctx.restore();
+}
+
+var tooltip = document.getElementById("tooltip");
+var tooltipLabel = document.getElementById("tooltipLabel");
+var tooltipDetail = document.getElementById("tooltipDetail");
+
+function showTooltip(x, y, label, detail) {
+  tooltip.style.left = (x + 12) + "px";
+  tooltip.style.top = (y + 12) + "px";
+  tooltipLabel.textContent = label;
+  tooltipDetail.textContent = detail;
+  tooltip.classList.add("visible");
+}
+
+function hideTooltip() {
+  tooltip.classList.remove("visible");
+}
+
+document.getElementById("predictSmooth").addEventListener("click", function() {
+  document.getElementById("predictionResult").textContent = "You predicted: Smooth. Now use Section 3 to test.";
+  this.style.background = "#d0d0d5";
+  document.getElementById("predictCliff").style.background = "none";
+});
+document.getElementById("predictCliff").addEventListener("click", function() {
+  document.getElementById("predictionResult").textContent = "You predicted: Sharp cliff. Now use Section 3 to test.";
+  this.style.background = "#d0d0d5";
+  document.getElementById("predictSmooth").style.background = "none";
+});
+
+var soundEnabled = false;
+var audioContext = null;
+function beep(success) {
+  if (!soundEnabled) return;
+  if (!audioContext) audioContext = new (window.AudioContext || window.webkitAudioContext)();
+  if (audioContext.state === "suspended") audioContext.resume();
+  var osc = audioContext.createOscillator();
+  var gain = audioContext.createGain();
+  osc.frequency.value = success ? 660 : 180;
+  gain.gain.setValueAtTime(0.0001, audioContext.currentTime);
+  gain.gain.exponentialRampToValueAtTime(0.08, audioContext.currentTime + 0.01);
+  gain.gain.exponentialRampToValueAtTime(0.0001, audioContext.currentTime + 0.18);
+  osc.connect(gain);
+  gain.connect(audioContext.destination);
+  osc.start();
+  osc.stop(audioContext.currentTime + 0.2);
+}
+document.getElementById("soundBtn").addEventListener("click", function() {
+  soundEnabled = !soundEnabled;
+  if (soundEnabled && !audioContext) audioContext = new AudioContext();
+  if (audioContext && audioContext.state === "suspended") audioContext.resume();
+  this.textContent = soundEnabled ? "Sound on" : "Sound off";
+});
+
+document.getElementById("themeBtn").addEventListener("click", function() {
+  document.body.classList.toggle("dark");
+  this.textContent = document.body.classList.contains("dark") ? "Light" : "Dark";
+});
+
+// ============================================================
+// SECTION 1
+// ============================================================
+(function() {
+  var net = new HebbNet(49, 0.03, 3);
+  var netCtx = setupCanvas(document.getElementById("hookNet"), 330, 330);
+  var resultCtx = setupCanvas(document.getElementById("hookResult"), 210, 210);
+  var sequence = ["T", "PLUS", "L"];
+  var running = false;
+  var hookTimer = null;
+  var autoPlayTimer = null;
+
+  function render() {
+    drawNetwork(netCtx, net);
+    var rows = "";
+    for (var i = 0; i < net.events.length; i++) {
+      var e = net.events[i];
+      var age = net.t - e.t;
+      var trace = Math.pow(1 - net.lam, age);
+      rows += "<tr><td>" + e.label + "</td><td>" + age + "</td><td>" + Math.round(trace * 100) + "%</td></tr>";
+    }
+    document.getElementById("hookTable").innerHTML = rows || "<tr><td colspan='3'>No memories</td></tr>";
+  }
+
+  function reset() {
+    if (hookTimer) { clearTimeout(hookTimer); hookTimer = null; }
+    if (autoPlayTimer) { clearTimeout(autoPlayTimer); autoPlayTimer = null; }
+    net.W.fill(0);
+    net.owner.fill(0);
+    net.state.fill(0);
+    net.events.length = 0;
+    net.t = 0;
+    running = false;
+    document.getElementById("hookPhase").textContent = "waiting";
+    document.getElementById("hookStatus").textContent = 'Press "Show three patterns" to begin.';
+    document.getElementById("hookResultText").textContent = "Recalled pattern appears here.";
+    drawGrid(resultCtx, new Float32Array(49), 7, "#c0c0c0");
+    render();
+  }
+
+  function showSequence() {
+    reset();
+    if (hookTimer) clearTimeout(hookTimer);
+    running = true;
+    document.getElementById("hookStart").disabled = true;
+    document.getElementById("hookPhase").textContent = "displaying";
+    var index = 0;
+    function next() {
+      if (index >= sequence.length) {
+        net.decay(8);
+        running = false;
+        document.getElementById("hookStart").disabled = false;
+        document.getElementById("hookPhase").textContent = "ready to test";
+        document.getElementById("hookStatus").textContent = "Sequence done. Try recalling each pattern.";
+        render();
+        return;
+      }
+      if (index > 0) net.decay(6);
+      var key = sequence[index];
+      var p = PAT[key];
+      net.store(p, 1, p.name, BITS[key]);
+      document.getElementById("hookStatus").textContent = "Displayed " + p.name + " – wrote " + p.cells.length + " neurons.";
+      render();
+      index++;
+      hookTimer = setTimeout(next, 800);
+    }
+    hookTimer = setTimeout(next, 800);
+  }
+
+  function test(key) {
+    if (!net.events.length) {
+      document.getElementById("hookResultText").textContent = "Store the sequence first.";
+      return;
+    }
+    var p = PAT[key];
+    var cue = erasedCue(p, 0.25, mulberry32(27 + key.length));
+    var result = net.recall(cue, 14, false);
+    var score = recovered(result.final, p);
+    net.state.set(result.final);
+    var color = score >= 0.85 ? "#27ae60" : (score >= 0.4 ? "#d48c2c" : "#c0392b");
+    drawGrid(resultCtx, result.final, 7, color);
+    document.getElementById("hookResultText").textContent = p.name + ": " + Math.round(score * 100) + "% recovered, " + falseOn(result.final, p) + " false-on cells.";
+    beep(score >= 0.85);
+    render();
+  }
+
+  function autoPlay() {
+    reset();
+    var idx = 0;
+    function step() {
+      if (idx >= sequence.length) {
+        net.decay(8);
+        document.getElementById("hookPhase").textContent = "auto-play done";
+        document.getElementById("hookStatus").textContent = "Auto-play complete. Try recalling each pattern.";
+        render();
+        return;
+      }
+      if (idx > 0) net.decay(6);
+      var key = sequence[idx];
+      var p = PAT[key];
+      net.store(p, 1, p.name, BITS[key]);
+      document.getElementById("hookStatus").textContent = "Auto-play: stored " + p.name;
+      render();
+      idx++;
+      autoPlayTimer = setTimeout(step, 700);
+    }
+    autoPlayTimer = setTimeout(step, 500);
+  }
+
+  document.getElementById("hookStart").addEventListener("click", showSequence);
+  document.getElementById("hookAge").addEventListener("click", function() {
+    net.decay(20);
+    render();
+    document.getElementById("hookStatus").textContent = "Aged 20 ticks.";
+  });
+  document.getElementById("hookReset").addEventListener("click", function() {
+    reset();
+    if (autoPlayTimer) { clearTimeout(autoPlayTimer); autoPlayTimer = null; }
+    document.getElementById("hookPhase").textContent = "reset";
+    document.getElementById("hookStatus").textContent = "Reset. Press 'Show three patterns' or reload for auto-play.";
+  });
+  document.querySelectorAll("[data-hook-key]").forEach(function(b) {
+    b.addEventListener("click", function() { test(this.dataset.hookKey); });
+  });
+  setTimeout(autoPlay, 300);
+})();
+
+// ============================================================
+// SECTION 2
+// ============================================================
+(function() {
+  var hebb = new HebbNet(49, 0.03, 3);
+  var gdW = new Float32Array(49 * 49);
+  var x = PAT.T.d;
+  var gdEpoch = 0, gdLoss = 0;
+  var hHeat = setupCanvas(document.getElementById("hebbHeat"), 140, 140);
+  var gHeat = setupCanvas(document.getElementById("gdHeat"), 140, 140);
+  var hOut = setupCanvas(document.getElementById("hebbOutput"), 140, 140);
+  var gOut = setupCanvas(document.getElementById("gdOutput"), 140, 140);
+
+  function gdEpochRun() {
+    var output = new Float32Array(49);
+    for (var i = 0; i < 49; i++) {
+      var sum = 0;
+      for (var j = 0; j < 49; j++) sum += gdW[i * 49 + j] * x[j];
+      output[i] = sum;
+    }
+    var loss = 0;
+    var lr = 0.025;
+    for (var i2 = 0; i2 < 49; i2++) {
+      var error = x[i2] - output[i2];
+      loss += error * error;
+      for (var j2 = 0; j2 < 49; j2++) {
+        gdW[i2 * 49 + j2] += lr * error * x[j2];
+      }
+    }
+    gdEpoch++;
+    gdLoss = loss / 49;
+  }
+
+  function gdOutput() {
+    var out = new Float32Array(49);
+    for (var i = 0; i < 49; i++) {
+      var sum = 0;
+      for (var j = 0; j < 49; j++) sum += gdW[i * 49 + j] * x[j];
+      out[i] = sum > 0.5 ? 1 : 0;
+    }
+    return out;
+  }
+
+  function render() {
+    drawHeat(hHeat, hebb.W, 49);
+    var gdMax = 0;
+    for (var i = 0; i < gdW.length; i++) {
+      if (Math.abs(gdW[i]) > gdMax) gdMax = Math.abs(gdW[i]);
+    }
+    var gdMaxValue = Math.max(0.5, gdMax * 1.2);
+    drawHeat(gHeat, gdW, 49, gdMaxValue);
+    var hRecall = hebb.recall(x, 4).final;
+    drawGrid(hOut, hRecall, 7, "#c0392b");
+    drawGrid(gOut, gdOutput(), 7, "#2c6bcf");
+    document.getElementById("hebbStats").textContent = hebb.events.length ? "One local write. Changed pairs: " + (PAT.T.cells.length * (PAT.T.cells.length - 1)) : "No write yet.";
+    document.getElementById("gdStats").textContent = gdEpoch ? "Epochs: " + gdEpoch + " · loss: " + gdLoss.toFixed(4) : "No training yet.";
+  }
+
+  document.getElementById("hebbWrite").addEventListener("click", function() {
+    hebb.store(PAT.T, 1, "T", BITS.T);
+    render();
+  });
+  document.getElementById("gdOne").addEventListener("click", function() {
+    gdEpochRun();
+    render();
+  });
+  document.getElementById("gdMany").addEventListener("click", function() {
+    for (var i = 0; i < 50; i++) gdEpochRun();
+    render();
+  });
+  document.getElementById("writeReset").addEventListener("click", function() {
+    hebb.W.fill(0);
+    hebb.owner.fill(0);
+    hebb.events.length = 0;
+    hebb.state.fill(0);
+    gdW.fill(0);
+    gdEpoch = 0;
+    gdLoss = 0;
+    render();
+  });
+  render();
+})();
+
+// ============================================================
+// SECTION 3
+// ============================================================
+(function() {
+  var plotCtx = setupCanvas(document.getElementById("fadePlot"), 700, 270);
+  var energyCtx = setupCanvas(document.getElementById("fadeEnergy"), 280, 280);
+  var patternCtx = setupCanvas(document.getElementById("fadePattern"), 210, 210);
+  var cue = erasedCue(PAT.T, 0.25, mulberry32(555));
+
+  function lam() { return parseFloat(document.getElementById("fadeLam").value); }
+  function theta() { return parseFloat(document.getElementById("fadeTheta").value); }
+  function time() { return parseInt(document.getElementById("fadeTime").value, 10); }
+
+  function evaluate() {
+    var traces = [], scores = [];
+    for (var t = 0; t <= 70; t++) {
+      var W = buildSingleWeight(PAT.T, 1, lam(), t, 49);
+      var r = runRecall(W, 49, cue, theta(), 14);
+      traces.push(Math.pow(1 - lam(), t));
+      scores.push(recovered(r.final, PAT.T));
+    }
+    return { traces: traces, scores: scores };
+  }
+
+  function render() {
+    var data = evaluate();
+    drawPlot(plotCtx, data.traces, data.scores, time());
+    var W = buildSingleWeight(PAT.T, 1, lam(), time(), 49);
+    var r = runRecall(W, 49, cue, theta(), 14);
+    var color = recovered(r.final, PAT.T) >= 0.85 ? "#27ae60" : "#c0392b";
+    drawGrid(patternCtx, r.final, 7, color);
+    drawEnergyLandscape(energyCtx, W, 49, r.final, theta(), time());
+    document.getElementById("fadeTrace").textContent = Math.round(data.traces[time()] * 100) + "%";
+    document.getElementById("fadeRecall").textContent = Math.round(recovered(r.final, PAT.T) * 100) + "%";
+    var score = recovered(r.final, PAT.T);
+    if (score >= 0.85) document.getElementById("fadeStatus").textContent = "Recall succeeds. The energy basin is deep.";
+    else if (score >= 0.4) document.getElementById("fadeStatus").textContent = "Recall is partial. The basin is shallow.";
+    else document.getElementById("fadeStatus").textContent = "Recall has failed. The basin has vanished.";
+  }
+
+  ["fadeLam", "fadeTheta", "fadeTime"].forEach(function(id) {
+    document.getElementById(id).addEventListener("input", function() {
+      document.getElementById("fadeLamValue").textContent = parseFloat(document.getElementById("fadeLam").value).toFixed(3);
+      document.getElementById("fadeThetaValue").textContent = parseFloat(document.getElementById("fadeTheta").value).toFixed(2);
+      document.getElementById("fadeTimeValue").textContent = document.getElementById("fadeTime").value + " ticks";
+      render();
+    });
+  });
+  document.getElementById("fadeLamValue").textContent = parseFloat(document.getElementById("fadeLam").value).toFixed(3);
+  document.getElementById("fadeThetaValue").textContent = parseFloat(document.getElementById("fadeTheta").value).toFixed(2);
+  document.getElementById("fadeTimeValue").textContent = document.getElementById("fadeTime").value + " ticks";
+  render();
+})();
+
+// ============================================================
+// SECTION 4 - Memory Blender
+// ============================================================
+(function() {
+  var resultCtx = setupCanvas(document.getElementById("blendResult"), 220, 220);
+  var diffCtx = setupCanvas(document.getElementById("blendDiff"), 220, 220);
+
+  function keyA() { return document.getElementById("blendA").value; }
+  function keyB() { return document.getElementById("blendB").value; }
+  function age() { return parseInt(document.getElementById("blendAge").value, 10); }
+
+  function render() {
+    var aKey = keyA(), bKey = keyB();
+    if (aKey === bKey) {
+      bKey = bKey === "T" ? "PLUS" : "T";
+      document.getElementById("blendB").value = bKey;
+    }
+    var a = PAT[aKey], b = PAT[bKey];
+    var WA = buildSingleWeight(a, 1, 0.03, age(), 49);
+    var WB = buildSingleWeight(b, 1, 0.03, 0, 49);
+    var W = new Float32Array(49 * 49);
+    for (var i = 0; i < W.length; i++) W[i] = WA[i] + WB[i];
+    var cue = erasedCue(a, 0.25, mulberry32(900 + age()));
+    var r = runRecall(W, 49, cue, 3, 14);
+    var score = recovered(r.final, a);
+    var color = score >= 0.85 ? "#27ae60" : (score >= 0.4 ? "#d48c2c" : "#c0392b");
+    drawGrid(resultCtx, r.final, 7, color);
+
+    var maxVal = 0;
+    for (var i2 = 0; i2 < WA.length; i2++) {
+      if (Math.abs(WA[i2]) > maxVal) maxVal = Math.abs(WA[i2]);
+      if (Math.abs(WB[i2]) > maxVal) maxVal = Math.abs(WB[i2]);
+    }
+    maxVal = Math.max(maxVal, 0.5);
+    var stats = drawDifference(diffCtx, WA, WB, 49, maxVal);
+
+    var overlapMsg = "";
+    if (stats.sharedCount > 0) {
+      overlapMsg = " · Shared synapses: " + stats.sharedCount + " (purple)";
+    } else {
+      overlapMsg = " · No shared synapses (try T + for purple)";
+    }
+
+    document.getElementById("blendStatus").textContent = a.name + ": " + Math.round(score * 100) + "% recovered · " + falseOn(r.final, a) + " false-on cells · age diff " + age() + " ticks." + overlapMsg;
+    beep(score >= 0.85);
+  }
+
+  ["blendA", "blendB", "blendAge"].forEach(function(id) {
+    document.getElementById(id).addEventListener("input", function() {
+      document.getElementById("blendAgeValue").textContent = document.getElementById("blendAge").value + " ticks";
+      render();
+    });
+  });
+  document.getElementById("blendAgeValue").textContent = document.getElementById("blendAge").value + " ticks";
+  render();
+})();
+
+// ============================================================
+// SECTION 5 - BDH
+// ============================================================
+(function() {
+  var net = new HebbNet(49, 0.03, 3);
+  var resultCtx = setupCanvas(document.getElementById("bdhResult"), 180, 180);
+  var heatCtx = setupCanvas(document.getElementById("bdhHeat"), 190, 190);
+  var attentionCtx = setupCanvas(document.getElementById("bdhAttention"), 190, 190);
+  var cue = erasedCue(PAT.T, 0.25, mulberry32(1212));
+
+  function updateKV() {
+    var seqLen = parseInt(document.getElementById("kvSeqLen").value, 10);
+    document.getElementById("kvSeqLenValue").textContent = seqLen;
+    var d = 64;
+    var transformerSize = seqLen * d;
+    var bdhSize = d * d;
+    var maxSize = Math.max(transformerSize, bdhSize, 100);
+    var transformerPct = Math.min(100, (transformerSize / maxSize) * 100);
+    var bdhPct = Math.min(100, (bdhSize / maxSize) * 100);
+    document.getElementById("kvTransformerSize").textContent = transformerSize.toLocaleString();
+    document.getElementById("kvBDHSize").textContent = bdhSize.toLocaleString();
+    document.getElementById("kvTransformerBar").style.width = transformerPct + "%";
+    document.getElementById("kvBDHBar").style.width = bdhPct + "%";
+  }
+  document.getElementById("kvSeqLen").addEventListener("input", updateKV);
+  updateKV();
+
+  function reset() {
+    net = new HebbNet(49, 0.03, 3);
+    net.store(PAT.T, 1, "T", BITS.T);
+    net.state.set(cue);
+    drawGrid(resultCtx, cue, 7, "#7d4fa8");
+    drawHeat(heatCtx, net.W, 49);
+    drawOuter(attentionCtx, cue, 49);
+    document.getElementById("bdhStatus").textContent = "Ready. Run separated or coupled recall. Sparsity: " + document.getElementById("bdhSparsity").value + "%";
+  }
+
+  function applySparsity(W, sparsityPercent) {
+    if (sparsityPercent <= 0) return W;
+    var threshold = sparsityPercent / 100;
+    var sorted = Float32Array.from(W).sort(function(a, b) { return a - b; });
+    var idx = Math.floor(sorted.length * threshold);
+    var cutoff = sorted[idx] || 0;
+    var result = new Float32Array(W);
+    for (var i = 0; i < result.length; i++) {
+      if (Math.abs(result[i]) < cutoff) result[i] = 0;
+    }
+    return result;
+  }
+
+  function run() {
+    var coupled = document.getElementById("bdhCoupled").checked;
+    var sparsity = parseInt(document.getElementById("bdhSparsity").value, 10);
+    net = new HebbNet(49, 0.03, 3);
+    net.store(PAT.T, 1, "T", BITS.T);
+    var result = net.recall(cue, 14, coupled, 0.08);
+    var sparseW = applySparsity(net.W, sparsity);
+    var color = recovered(result.final, PAT.T) >= 0.85 ? "#27ae60" : "#c0392b";
+    drawGrid(resultCtx, result.final, 7, color);
+    drawHeat(heatCtx, sparseW, 49);
+    drawOuter(attentionCtx, cue, 49);
+    var score = recovered(result.final, PAT.T);
+    var mode = coupled ? "Coupled (BDH-style)" : "Separated";
+    document.getElementById("bdhStatus").textContent = mode + " mode: " + Math.round(score * 100) + "% recovered · " + result.writes + " activity writes · sparsity: " + sparsity + "%";
+    beep(score >= 0.85);
+  }
+
+  document.getElementById("bdhRun").addEventListener("click", run);
+  document.getElementById("bdhReset").addEventListener("click", reset);
+  document.getElementById("bdhSparsity").addEventListener("input", function() {
+    document.getElementById("bdhSparsityValue").textContent = this.value + "%";
+  });
+  reset();
+})();
+
+// ============================================================
+// SECTION 6 - Sandbox
+// ============================================================
+(function() {
+  var side = 7, n = 49;
+  var draft = new Float32Array(n);
+  var stored = null;
+  var net = new HebbNet(n, 0.03, 3);
+
+  var drawCtx = setupCanvas(document.getElementById("sandboxDraw"), 300, 300);
+  var netCtx = setupCanvas(document.getElementById("sandboxNet"), 330, 330);
+  var heatCtx = setupCanvas(document.getElementById("sandboxHeat"), 210, 210);
+  var phaseCtx = setupCanvas(document.getElementById("phaseMap"), 260, 260);
+  var interferenceCtx = setupCanvas(document.getElementById("interferenceHeatmap"), 280, 280);
+  var interferencePatterns = [];
+  var interferenceNet = new HebbNet(n, 0.03, 3);
+
+  function eta() { return parseFloat(document.getElementById("sandboxEta").value); }
+  function lam() { return parseFloat(document.getElementById("sandboxLam").value); }
+  function noise() { return parseFloat(document.getElementById("sandboxNoise").value); }
+
+  function updateLabels() {
+    document.getElementById("sandboxEtaValue").textContent = eta().toFixed(2);
+    document.getElementById("sandboxLamValue").textContent = lam().toFixed(3);
+    document.getElementById("sandboxNoiseValue").textContent = Math.round(noise() * 100) + "%";
+  }
+
+  function render() {
+    drawGrid(drawCtx, draft, side, "#27ae60");
+    drawNetwork(netCtx, net);
+    drawHeat(heatCtx, net.W, n);
+  }
+
+  function fromDraft() {
+    var cells = [];
+    for (var i = 0; i < draft.length; i++) if (draft[i] > 0.5) cells.push(i);
+    return { d: Float32Array.from(draft), cells: cells, side: side };
+  }
+
+  var painting = null;
+  function cellFromEvent(e) {
+    var r = document.getElementById("sandboxDraw").getBoundingClientRect();
+    var x = (e.clientX - r.left) * (300 / r.width);
+    var y = (e.clientY - r.top) * (300 / r.height);
+    var c = Math.max(0, Math.min(side - 1, Math.floor(x / (300 / side))));
+    var row = Math.max(0, Math.min(side - 1, Math.floor(y / (300 / side))));
+    return row * side + c;
+  }
+
+  document.getElementById("sandboxHeat").addEventListener("mousemove", function(e) {
+    var rect = this.getBoundingClientRect();
+    var scaleX = heatCtx.logicalWidth / rect.width;
+    var scaleY = heatCtx.logicalHeight / rect.height;
+    var x = (e.clientX - rect.left) * scaleX;
+    var y = (e.clientY - rect.top) * scaleY;
+    var cellSize = heatCtx.logicalWidth / n;
+    var col = Math.floor(x / cellSize);
+    var row = Math.floor(y / cellSize);
+    if (col >= 0 && col < n && row >= 0 && row < n) {
+      var idx = row * n + col;
+      var weight = net.W[idx] || 0;
+      var trace = weight * Math.pow(1 - net.lam, net.t);
+      var owner = "none";
+      if (net.owner && net.owner[idx]) {
+        var bits = [];
+        if (net.owner[idx] & BITS.T) bits.push("T");
+        if (net.owner[idx] & BITS.PLUS) bits.push("+");
+        if (net.owner[idx] & BITS.L) bits.push("L");
+        if (net.owner[idx] & BITS.CUSTOM) bits.push("custom");
+        owner = bits.join(", ") || "none";
+      }
+      showTooltip(e.clientX, e.clientY,
+        "Synapse (" + row + "," + col + ")",
+        "Weight: " + weight.toFixed(3) + " | Trace: " + trace.toFixed(3) + " | Owner: " + owner
+      );
+    } else {
+      hideTooltip();
+    }
+  });
+  document.getElementById("sandboxHeat").addEventListener("mouseleave", hideTooltip);
+
+  document.getElementById("sandboxNet").addEventListener("mousemove", function(e) {
+    var rect = this.getBoundingClientRect();
+    var scaleX = netCtx.logicalWidth / rect.width;
+    var scaleY = netCtx.logicalHeight / rect.height;
+    var x = (e.clientX - rect.left) * scaleX;
+    var y = (e.clientY - rect.top) * scaleY;
+    var side2 = Math.round(Math.sqrt(n));
+    var pad = 24;
+    var step = (netCtx.logicalWidth - 2 * pad) / (side2 - 1);
+    var minDist = 20, nearest = -1;
+    for (var i = 0; i < n; i++) {
+      var px = pad + (i % side2) * step;
+      var py = pad + Math.floor(i / side2) * step;
+      var dist = Math.sqrt((x - px) * (x - px) + (y - py) * (y - py));
+      if (dist < minDist) { minDist = dist; nearest = i; }
+    }
+    if (nearest >= 0 && minDist < 20) {
+      var state = net.state[nearest] || 0;
+      var incoming = 0;
+      for (var j = 0; j < n; j++) incoming += Math.abs(net.W[nearest * n + j] || 0);
+      showTooltip(e.clientX, e.clientY,
+        "Neuron " + nearest,
+        "State: " + (state > 0.5 ? "active" : "inactive") + " | Incoming weight sum: " + incoming.toFixed(2)
+      );
+    } else {
+      hideTooltip();
+    }
+  });
+  document.getElementById("sandboxNet").addEventListener("mouseleave", hideTooltip);
+
+  document.getElementById("sandboxDraw").addEventListener("pointerdown", function(e) {
+    var i = cellFromEvent(e);
+    painting = draft[i] > 0.5 ? 0 : 1;
+    draft[i] = painting;
+    this.setPointerCapture(e.pointerId);
+    render();
+  });
+  document.getElementById("sandboxDraw").addEventListener("pointermove", function(e) {
+    if (painting !== null) { draft[cellFromEvent(e)] = painting; render(); }
+  });
+  document.getElementById("sandboxDraw").addEventListener("pointerup", function() { painting = null; });
+  document.getElementById("sandboxDraw").addEventListener("pointerleave", function() { painting = null; });
+
+  document.getElementById("sandboxSize").addEventListener("change", function() {
+    n = parseInt(this.value, 10);
+    side = Math.round(Math.sqrt(n));
+    draft = new Float32Array(n);
+    stored = null;
+    net = new HebbNet(n, lam(), 3);
+    interferencePatterns = [];
+    interferenceNet = new HebbNet(n, lam(), 3);
+    document.getElementById("sandboxStatus").textContent = "Reset to " + n + " neurons.";
+    render();
+    drawPhase();
+    updateInterference();
+  });
+
+  document.getElementById("sandboxPreset").addEventListener("click", function() {
+    if (side !== 7) { document.getElementById("sandboxStatus").textContent = "T preset only for 7x7."; return; }
+    draft.set(PAT.T.d);
+    document.getElementById("sandboxStatus").textContent = "Loaded T. Press Store.";
+    render();
+  });
+  document.getElementById("sandboxClear").addEventListener("click", function() {
+    draft.fill(0);
+    document.getElementById("sandboxStatus").textContent = "Cleared.";
+    render();
+  });
+  document.getElementById("sandboxStore").addEventListener("click", function() {
+    var p = fromDraft();
+    if (!p.cells.length) { document.getElementById("sandboxStatus").textContent = "Draw at least one cell."; return; }
+    net.lam = lam();
+    net.store(p, eta(), "custom", BITS.CUSTOM);
+    stored = copyPattern(p);
+    document.getElementById("sandboxStatus").textContent = "Stored " + p.cells.length + " cells with η=" + eta().toFixed(2);
+    render();
+    drawPhase();
+  });
+  document.getElementById("sandboxRecall").addEventListener("click", function() {
+    if (!stored) {
+      var p = fromDraft();
+      if (!p.cells.length) { document.getElementById("sandboxStatus").textContent = "Draw something first."; return; }
+      net.store(p, eta(), "custom", BITS.CUSTOM);
+      stored = copyPattern(p);
+    }
+    net.theta = 3;
+    var cue = erasedCue(stored, noise(), mulberry32(808 + stored.cells.length));
+    var result = net.recall(cue, 14, false);
+    net.state.set(result.final);
+    var score = recovered(result.final, stored);
+    document.getElementById("sandboxStatus").textContent = "Recovered " + Math.round(score * 100) + "% · " + falseOn(result.final, stored) + " false-on.";
+    beep(score >= 0.85);
+    render();
+  });
+  document.getElementById("sandboxAge").addEventListener("click", function() {
+    net.decay(20);
+    document.getElementById("sandboxStatus").textContent = "Aged 20 ticks.";
+    render();
+  });
+  document.getElementById("sandboxReset").addEventListener("click", function() {
+    net = new HebbNet(n, lam(), 3);
+    stored = null;
+    interferencePatterns = [];
+    interferenceNet = new HebbNet(n, lam(), 3);
+    document.getElementById("sandboxStatus").textContent = "Memory reset.";
+    render();
+    drawPhase();
+    updateInterference();
+  });
+
+  function phasePattern() {
+    if (stored) return stored;
+    var p = fromDraft();
+    return p.cells.length ? p : null;
+  }
+
+  function drawPhase() {
+    clear(phaseCtx);
+    var p = phasePattern();
+    if (!p || !p.cells.length) {
+      phaseCtx.fillStyle = "#777";
+      phaseCtx.font = "13px " + getComputedStyle(document.body).fontFamily;
+      phaseCtx.fillText("Store or draw a pattern first.", 18, 130);
+      return;
+    }
+    var cells = 11;
+    var cell = phaseCtx.logicalWidth / cells;
+    var cue = erasedCue(p, 0.25, mulberry32(333 + p.cells.length));
+    for (var y = 0; y < cells; y++) {
+      for (var x = 0; x < cells; x++) {
+        var e = 0.2 + (1.6 - 0.2) * x / (cells - 1);
+        var l = 0.08 * y / (cells - 1);
+        var W = buildSingleWeight(p, e, l, 40, n);
+        var r = runRecall(W, n, cue, 3, 10);
+        var score = recovered(r.final, p);
+        phaseCtx.fillStyle = score >= 0.85 ? "#58b276" : (score >= 0.5 ? "#f0c46a" : "#db8a86");
+        phaseCtx.fillRect(x * cell, y * cell, cell + 1, cell + 1);
+      }
+    }
+    var px = (eta() - 0.2) / (1.6 - 0.2) * phaseCtx.logicalWidth;
+    var py = lam() / 0.08 * phaseCtx.logicalHeight;
+    phaseCtx.strokeStyle = "#1a1a1a";
+    phaseCtx.lineWidth = 2;
+    phaseCtx.beginPath();
+    phaseCtx.arc(Math.max(0, Math.min(phaseCtx.logicalWidth, px)), Math.max(0, Math.min(phaseCtx.logicalHeight, py)), 6, 0, Math.PI * 2);
+    phaseCtx.stroke();
+  }
+
+  document.getElementById("phaseRecompute").addEventListener("click", drawPhase);
+
+  function updateInterference() {
+    var m = interferencePatterns.length;
+    document.getElementById("interferenceCount").textContent = m + " patterns";
+    drawInterferenceHeatmap(interferenceCtx, interferencePatterns, n, side);
+    var theoretical = 0.138 * n;
+    var pct = Math.min(100, (m / theoretical) * 100);
+    var fill = document.getElementById("capacityFill");
+    fill.style.width = Math.min(100, pct) + "%";
+    fill.className = "fill" + (pct > 90 ? " danger" : pct > 70 ? " warning" : "");
+    document.getElementById("capacityPercent").textContent = Math.round(pct) + "%";
+    var theoreticalLine = document.getElementById("capacityTheoretical");
+    theoreticalLine.style.left = Math.min(100, (theoretical / 10) * 100) + "%";
+    var avgInterference = 0;
+    var count = 0;
+    for (var i = 0; i < m; i++) {
+      for (var j = i + 1; j < m; j++) {
+        var dot = 0;
+        var normA = 0, normB = 0;
+        for (var k = 0; k < interferencePatterns[i].length; k++) {
+          dot += interferencePatterns[i][k] * interferencePatterns[j][k];
+          normA += interferencePatterns[i][k] * interferencePatterns[i][k];
+          normB += interferencePatterns[j][k] * interferencePatterns[j][k];
+        }
+        if (normA > 0 && normB > 0) avgInterference += Math.abs(dot) / (Math.sqrt(normA) * Math.sqrt(normB));
+        count++;
+      }
+    }
+    avgInterference = count > 0 ? avgInterference / count : 0;
+    var statusText = m === 0 ? "Add patterns to see interference." :
+                     m <= theoretical * 0.5 ? "Low interference. Memory regime is stable." :
+                     m <= theoretical ? "Moderate interference. Some patterns may collide." :
+                     "High interference. Capacity exceeded - recall will be unreliable.";
+    document.getElementById("interferenceStatus").textContent = statusText + " (Avg overlap: " + (avgInterference * 100).toFixed(1) + "%)";
+  }
+
+  function addRandomPattern() {
+    var rng = mulberry32(3000 + interferencePatterns.length * 7);
+    var d = new Float32Array(n);
+    var cells = [];
+    var target = Math.max(4, Math.round(n * 0.3));
+    while (cells.length < target) {
+      var i = Math.floor(rng() * n);
+      if (!d[i]) { d[i] = 1; cells.push(i); }
+    }
+    var p = { d: d, cells: cells, side: side };
+    interferencePatterns.push(d);
+    interferenceNet.store(p, 0.5, "rand" + interferencePatterns.length, BITS.CUSTOM);
+    updateInterference();
+  }
+
+  document.getElementById("interferenceAdd").addEventListener("click", addRandomPattern);
+  document.getElementById("interferenceClear").addEventListener("click", function() {
+    interferencePatterns = [];
+    interferenceNet = new HebbNet(n, lam(), 3);
+    updateInterference();
+  });
+
+  document.getElementById("checkA").addEventListener("click", function() {
+    if (!stored) { document.getElementById("checkAResult").textContent = "Store a pattern first."; return; }
+    var weakW = buildSingleWeight(stored, eta(), lam(), 0, n);
+    var cue = erasedCue(stored, 0.25, mulberry32(411));
+    var r = runRecall(weakW, n, cue, 3, 10);
+    var score = recovered(r.final, stored);
+    var pass = eta() < 0.7 && score < 0.5;
+    document.getElementById("checkAResult").textContent = (pass ? "Passed" : "Not yet") + " · η=" + eta().toFixed(2) + ", recall=" + Math.round(score * 100) + "%.";
+  });
+  document.getElementById("checkB").addEventListener("click", function() {
+    var p1 = randomPattern(41, 41);
+    var p2 = randomPattern(42, 42);
+    var testNet = new HebbNet(n, lam(), 3);
+    testNet.store(p1, 1, "A", BITS.CUSTOM);
+    testNet.store(p2, 1, "B", BITS.CUSTOM);
+    var r1 = testNet.recall(erasedCue(p1, 0.25, mulberry32(1)), 10, false);
+    var r2 = testNet.recall(erasedCue(p2, 0.25, mulberry32(2)), 10, false);
+    var s = (recovered(r1.final, p1) + recovered(r2.final, p2)) / 2;
+    document.getElementById("checkBResult").textContent = (s >= 0.85 ? "Passed" : "Not yet") + " · mean recovery " + Math.round(s * 100) + "%.";
+  });
+  document.getElementById("checkC").addEventListener("click", function() {
+    if (!stored) { document.getElementById("checkCResult").textContent = "Store a pattern first."; return; }
+    var cue = erasedCue(stored, 0.25, mulberry32(921));
+    var w10 = buildSingleWeight(stored, eta(), lam(), 10, n);
+    var w40 = buildSingleWeight(stored, eta(), lam(), 40, n);
+    var r10 = runRecall(w10, n, cue, 3, 10);
+    var r40 = runRecall(w40, n, cue, 3, 10);
+    var s10 = recovered(r10.final, stored);
+    var s40 = recovered(r40.final, stored);
+    document.getElementById("checkCResult").textContent = (s10 >= 0.8 && s40 < 0.3 ? "Passed" : "Not yet") + " · t10=" + Math.round(s10 * 100) + "%, t40=" + Math.round(s40 * 100) + "%.";
+  });
+
+  function randomPattern(count, seed) {
+    var rng = mulberry32(seed);
+    var d = new Float32Array(n);
+    var cells = [];
+    var target = Math.max(4, Math.round(n * 0.2));
+    while (cells.length < target) {
+      var i = Math.floor(rng() * n);
+      if (!d[i]) { d[i] = 1; cells.push(i); }
+    }
+    return { d: d, cells: cells, side: side };
+  }
+
+  ["sandboxEta", "sandboxLam", "sandboxNoise"].forEach(function(id) {
+    document.getElementById(id).addEventListener("input", function() {
+      updateLabels();
+      net.lam = lam();
+      drawPhase();
+      render();
+    });
+  });
+  updateLabels();
+  render();
+  drawPhase();
+  updateInterference();
+})();
+
+// ============================================================
+// SECTION 7 - Quiz
+// ============================================================
+(function() {
+  function failureTime(lambda) {
+    var cue = erasedCue(PAT.T, 0.25, mulberry32(999));
+    for (var t = 0; t <= 70; t++) {
+      var W = buildSingleWeight(PAT.T, 1, lambda, t, 49);
+      var r = runRecall(W, 49, cue, 3, 14);
+      if (recovered(r.final, PAT.T) < 0.85) return t;
+    }
+    return 71;
+  }
+
+  document.getElementById("quizLam").addEventListener("input", function() {
+    document.getElementById("quizLamValue").textContent = parseFloat(this.value).toFixed(3);
+  });
+  document.getElementById("quizLamValue").textContent = parseFloat(document.getElementById("quizLam").value).toFixed(3);
+
+  document.getElementById("quizCheckA").addEventListener("click", function() {
+    var l = parseFloat(document.getElementById("quizLam").value);
+    var t = failureTime(l);
+    var pass = t >= 25 && t <= 35;
+    document.getElementById("quizResultA").textContent = (pass ? "Passed" : "Try again") + " · first failure near t=" + t;
+  });
+
+  document.querySelectorAll("[data-diagnosis]").forEach(function(b) {
+    b.addEventListener("click", function() {
+      var correct = this.dataset.diagnosis === "noise";
+      document.getElementById("diagnosisResult").textContent = correct ? "Correct. Cue damage is the cause." : "Not this time. The memory is fresh and no interference – cue damage is most likely.";
+      document.getElementById("diagnosisResult").style.color = correct ? "#27ae60" : "#c0392b";
+    });
+  });
+
+  document.getElementById("quizCheckC").addEventListener("click", function() {
+    var d = new Float32Array(49);
+    d[24] = 1; d[23] = 1; d[25] = 1;
+    var p = patternFromVector(d, 7);
+    var cue = Float32Array.from(d);
+    cue[24] = 0;
+    var W = buildSingleWeight(p, 1, 0, 0, 49);
+    var r = runRecall(W, 49, cue, 3, 10);
+    var score = recovered(r.final, p);
+    document.getElementById("quizResultC").textContent = "Computed recovery: " + Math.round(score * 100) + "%. Three active cells cannot drive a missing cell past θ=3.";
+  });
+})();
+</script>
+</body>
+</html>
