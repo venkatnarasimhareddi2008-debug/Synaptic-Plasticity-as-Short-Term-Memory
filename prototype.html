@@ -401,6 +401,32 @@ footer {
   color: var(--muted);
   min-width: 44px;
 }
+
+.eq-compare {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 16px;
+  background: var(--light);
+  padding: 16px;
+  border-radius: 6px;
+  margin: 12px 0;
+}
+.eq-compare .eq-box {
+  text-align: center;
+  font-size: 14px;
+  color: var(--text);
+  font-weight: 500;
+}
+.eq-compare .eq-box .eq-label {
+  font-weight: 400;
+  color: var(--muted);
+  font-size: 13px;
+  display: block;
+  margin-bottom: 4px;
+}
+@media (max-width: 600px) {
+  .eq-compare { grid-template-columns: 1fr; }
+}
 </style>
 </head>
 <body>
@@ -434,11 +460,13 @@ footer {
 <section class="section" id="hook">
   <h2>1. Flash, store and forget</h2>
   <p class="desc">
-    The core Hebbian learning rule <span class="citation">[Hebb, 1949]</span> - "neurons that fire together, wire together" -- is formalised as the outer-product update. When a pattern is presented, every pair of co-active neurons increases its synaptic weight by the learning rate η. For active cells <span class="math">i</span> and <span class="math">j</span>, the update is:
+    The core Hebbian learning rule <span class="citation">[Hebb, 1949]</span> -- "neurons that fire together, wire together" -- is formalised as the outer-product update. When a pattern is presented, every pair of co-active neurons increases its synaptic weight by the learning rate η. For active cells <span class="math">i</span> and <span class="math">j</span>, the update is:
     <span class="eq">Δw<sub>ij</sub> = η · x<sub>i</sub> · x<sub>j</sub></span>
     where <span class="math">x<sub>i</sub> ∈ {0,1}</span> is the activation of neuron <span class="math">i</span>. This is a local, biologically plausible rule: only synapses connecting two simultaneously active neurons are strengthened, requiring no global error signal. This is the foundational mechanism for associative memory. The network stores three distinct patterns (T, +, L) sequentially. Each store adds a rank-one outer-product matrix to the weight matrix <span class="math">W</span>. Between stores, synaptic decay multiplies every weight by <span class="math">(1 - λ)</span> each tick. The trace of a memory after age <span class="math">t</span> is <span class="math">(1 - λ)<sup>t</sup></span> -- the fraction of the original weight that remains.
     <br><br>
     Recall is iterative: starting from a damaged cue, each neuron computes its total input current <span class="math">h<sub>i</sub> = Σ<sub>j≠i</sub> W<sub>ij</sub> x<sub>j</sub></span>, then updates to 1 if <span class="math">h<sub>i</sub> > θ</span>, to 0 if <span class="math">h<sub>i</sub> < θ</span>, or stays unchanged if equal. This is a thresholded linear dynamical system that converges to an attractor corresponding to one of the stored patterns. The page loads with an active demonstration -- watch the patterns being stored, decaying, and recalled.
+    <br><br>
+    <em style="color:var(--muted);">Hover over any neuron or synapse in the network visualisation to inspect its weight and trace.</em>
   </p>
   <div class="controls">
     <button class="primary" id="hookStart">Show three patterns</button>
@@ -449,7 +477,7 @@ footer {
   <p id="hookStatus" class="status">Auto-playing demonstration: storing T, +, L sequentially...</p>
   <div class="grid2">
     <div>
-      <h3 style="font:600 16px/1.4 var(--font-family);margin-bottom:4px;">Network state</h3>
+      <h3 style="font:600 16px/1.4 var(--font-family);margin-bottom:4px;">Network state <span style="font-weight:400;color:var(--muted);font-size:13px;">(hover for details)</span></h3>
       <div class="canvas-wrap"><canvas id="hookNet"></canvas></div>
       <div class="legend"><span class="red">T</span><span class="blue">+</span><span class="orange">L</span></div>
     </div>
@@ -475,7 +503,9 @@ footer {
     <span class="eq">ŷ<sub>i</sub> = Σ<sub>j</sub> W<sub>ij</sub> x<sub>j</sub></span>
     The loss is the mean squared error:
     <span class="eq">L = (1/N) Σ<sub>i</sub> (x<sub>i</sub> − ŷ<sub>i</sub>)<sup>2</sup></span>
-    The delta-rule update is <span class="math">ΔW<sub>ij</sub> = η<sub>GD</sub> (x<sub>i</sub> − ŷ<sub>i</sub>) x<sub>j</sub></span>, adjusting all 49×49 = 2401 weights each epoch. This comparison illuminates the fundamental trade-off between memory and generalisation. Hebbian learning is extremely efficient for rapid memorisation but lacks generalisation capacity; gradient descent is slower but can interpolate and generalise to unseen inputs. Running 50 GD epochs reduces the loss to near zero, but at the cost of dense computation over many steps.
+    The delta-rule update is <span class="math">ΔW<sub>ij</sub> = η<sub>GD</sub> (x<sub>i</sub> − ŷ<sub>i</sub>) x<sub>j</sub></span>, adjusting all 49×49 = 2401 weights each epoch. This comparison illuminates the fundamental trade-off between memory and generalisation. Hebbian learning is extremely efficient for rapid memorisation but lacks generalisation capacity; gradient descent is slower but can interpolate and generalise to unseen inputs. Running 50 GD epochs reduces the loss to near zero -- but at the cost of dense computation over many steps.
+    <br><br>
+    <em style="color:var(--muted);">Hover over the heatmaps to see individual weight values.</em>
   </p>
   <div class="controls">
     <button class="primary" id="hebbWrite">One Hebbian write</button>
@@ -518,6 +548,8 @@ footer {
     The 2D energy landscape below visualises the Hopfield energy:
     <span class="eq">E = −½ Σ<sub>i≠j</sub> W<sub>ij</sub> x<sub>i</sub> x<sub>j</sub> + θ Σ<sub>i</sub> x<sub>i</sub></span>
     The rolling ball represents the network state, settling into an attractor well (a stored memory). As you drag the time slider, watch the basin flatten -- when the barrier vanishes, the state rolls into the zero attractor, providing a geometric proof of why failure is a cliff, not a smooth slide.
+    <br><br>
+    <em style="color:var(--muted);">Drag the time slider to see the energy landscape evolve.</em>
   </p>
   <div class="controls">
     <label>λ <input id="fadeLam" type="range" min=".005" max=".08" step=".0025" value=".03"><span class="value" id="fadeLamValue"></span></label>
@@ -535,7 +567,7 @@ footer {
   <div class="legend"><span class="red">Recall success</span><span class="blue">Synaptic trace</span></div>
 </section>
 
-<!-- SECTION 4 - Memory Blender with new citation -->
+<!-- SECTION 4 -->
 <section class="section" id="collision">
   <h2>4. Memory blender: two patterns collide</h2>
   <p class="desc">
@@ -556,7 +588,7 @@ footer {
   </div>
 </section>
 
-<!-- SECTION 5 -->
+<!-- SECTION 5 - BDH -->
 <section class="section" id="bdh">
   <h2>5. The Dragon Hatchling (BDH) synapse model</h2>
   <p class="desc">
@@ -564,7 +596,24 @@ footer {
     <span class="eq"><span style="font-weight:600;">b<sub>ij</sub>(t) = γ · b<sub>ij</sub>(t−1) + x<sub>i</sub>(t) · x<sub>j</sub>(t)</span></span>
     where <span class="math">b<sub>ij</sub></span> is the fast synaptic state between neurons <span class="math">i</span> and <span class="math">j</span>, <span class="math">γ</span> is a retention factor (analogous to <span class="math">1 - λ</span>), and <span class="math">x<sub>i</sub>(t) x<sub>j</sub>(t)</span> is the Hebbian outer-product of the current activation vector. This is the same mathematical form as our toy network's update, but BDH implements it at billions of parameters with GPU-optimised linear attention and ReLU-low-rank transformations. The key innovation is coupling: the fast state is updated during every recall (inference) step, not just during explicit storage. This allows the network to learn from context and perform demonstration-based reasoning, as shown in BDH-CQ <span class="citation">[Pathway, 2026]</span>.
     <br><br>
-    The bridge from classical Hopfield networks to BDH's linear attention is the outer-product update. In Hopfield networks, the weight matrix is a sum of outer products: <span class="math">W = Σ<sub>μ</sub> ξ<sub>μ</sub> ξ<sub>μ</sub><sup>T</sup></span>. BDH generalises this to sequences: <span class="math">b<sub>t</sub> = γ b<sub>t−1</sub> + k<sub>t</sub> v<sub>t</sub><sup>T</sup></span>, where <span class="math">k<sub>t</sub></span> and <span class="math">v<sub>t</sub></span> are key and value vectors derived from the input. The sparsity slider below controls the fraction of non-negative activations -- BDH reportedly uses approximately 5% sparsity <span class="citation">[Pathway, 2025, Table 2]</span>, which prevents cross-talk and improves memory fidelity. The memory footprint comparison below shows how Transformer KV-cache grows linearly with sequence length <span class="math">O(L · d)</span>, while BDH's synaptic state remains fixed <span class="math">O(d<sup>2</sup>)</span>.
+    The bridge from classical Hopfield networks to BDH's linear attention is the outer-product update. The equations below show the progression:
+  </p>
+  <div class="eq-compare">
+    <div class="eq-box">
+      <span class="eq-label">Classical Hopfield</span>
+      <span>W = Σ<sub>μ</sub> ξ<sub>μ</sub> ξ<sub>μ</sub><sup>T</sup></span>
+    </div>
+    <div class="eq-box">
+      <span class="eq-label">BDH Fast-Weight Memory</span>
+      <span>b<sub>t</sub> = γ b<sub>t−1</sub> + k<sub>t</sub> v<sub>t</sub><sup>T</sup></span>
+    </div>
+    <div class="eq-box">
+      <span class="eq-label">Our Toy Model</span>
+      <span>Δw<sub>ij</sub> = η · x<sub>i</sub> · x<sub>j</sub></span>
+    </div>
+  </div>
+  <p class="desc" style="margin-top:0;">
+    BDH generalises the classical Hopfield outer-product update to sequences, allowing memory to evolve during inference. The sparsity slider below controls the fraction of non-negative activations -- BDH reportedly uses approximately 5% sparsity <span class="citation">[Pathway, 2025, Table 2]</span>, which prevents cross-talk and improves memory fidelity.
   </p>
 
   <div class="bdh-reported">
@@ -582,7 +631,11 @@ footer {
     <label>Sparsity <input id="bdhSparsity" type="range" min="0" max="20" step="1" value="5"><span class="value" id="bdhSparsityValue">5%</span></label>
     <button class="primary" id="bdhRun">Recall from cue</button>
     <button id="bdhReset">Reset</button>
+    <span class="badge" id="bdhRunCount">0 runs</span>
   </div>
+  <p id="bdhSparsityNote" class="note" style="font-size:13px;color:var(--muted);margin-top:-6px;margin-bottom:12px;">
+    <span id="bdhSparsityEffect">Current sparsity: 5% — minimal effect on recall.</span>
+  </p>
 
   <div style="background:var(--light);border-radius:6px;padding:16px 20px;margin:12px 0;">
     <h4 style="font:600 14px/1.4 var(--font-family);color:var(--text);margin-bottom:8px;">Memory footprint: Transformer KV-cache vs BDH synaptic state</h4>
@@ -723,11 +776,11 @@ footer {
 <div class="refs">
   <h3>References</h3>
   <ol>
-    <li>Hebb, D.O. (1949). <em>The Organization of Behavior.</em> Wiley. <a href="https://archive.org/details/in.ernet.dli.2015.168156" target="_blank">Internet Archive</a></li>
+    <li>Hebb, D.O. (1949). <em>The Organization of Behavior.</em> Wiley. <a href="https://archive.org/details/organizationofbe00hebb" target="_blank">Internet Archive</a></li>
     <li>McCulloch, W.S. &amp; Pitts, W. (1943). A logical calculus of the ideas immanent in nervous activity. <em>Bulletin of Mathematical Biophysics</em> 5(4), 115-133. <a href="https://doi.org/10.1007/BF02478259" target="_blank">doi:10.1007/BF02478259</a></li>
     <li>Hopfield, J.J. (1982). Neural networks and physical systems with emergent collective computational abilities. <em>PNAS</em> 79(8), 2554-2558. <a href="https://doi.org/10.1073/pnas.79.8.2554" target="_blank">doi:10.1073/pnas.79.8.2554</a> <span class="tag">foundational</span></li>
     <li>Amit, D.J., Gutfreund, H., &amp; Sompolinsky, H. (1985). Storing infinite numbers of patterns in a spin-glass model of neural networks. <em>Physical Review Letters</em> 55(14), 1530-1533. <a href="https://doi.org/10.1103/PhysRevLett.55.1530" target="_blank">doi:10.1103/PhysRevLett.55.1530</a> <span class="tag">capacity</span></li>
-    <li>Millidge, B., Song, Y., Bogacz, S., Lukasiewicz, T., &amp; Bogacz, R. (2024). Universal Hopfield Networks: A General Framework for Single-Shot Associative Memory Paradigms. <em>Neural Networks.</em> <a href="https://arxiv.org/abs/2202.04557" target="_blank">arXiv:2206.09455</a> <span class="tag">universal Hopfield</span></li>
+    <li>Millidge, B., Song, Y., Bogacz, S., Lukasiewicz, T., &amp; Bogacz, R. (2024). Universal Hopfield Networks: A General Framework for Single-Shot Associative Memory Paradigms. <em>Neural Networks.</em> <a href="https://arxiv.org/abs/2206.09455" target="_blank">arXiv:2206.09455</a> <span class="tag">universal Hopfield</span></li>
     <li>Ba, J., Hinton, G., Mnih, V., Leibo, J.Z., &amp; Ionescu, C. (2016). Using Fast Weights to Attend to the Recent Past. <em>NeurIPS 2016</em>. <a href="https://arxiv.org/abs/1610.06258" target="_blank">arXiv:1610.06258</a> <span class="tag">fast weights</span></li>
     <li>Ramsauer, H., et al. (2020). Hopfield Networks is All You Need. <em>ICLR 2021</em>. <a href="https://arxiv.org/abs/2008.02217" target="_blank">arXiv:2008.02217</a> <span class="tag">modern Hopfield</span></li>
     <li>Schlag, S., Irie, K., &amp; Schmidhuber, J. (2021). Linear Transformers Are Secretly Fast Weight Programmers. <em>ICML 2021</em>. <a href="https://arxiv.org/abs/2102.11174" target="_blank">arXiv:2102.11174</a> <span class="tag">linear attention</span></li>
@@ -773,6 +826,8 @@ function setupCanvas(canvas, w, h) {
   ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
   ctx.logicalWidth = w;
   ctx.logicalHeight = h;
+  canvas.logicalWidth = w;
+  canvas.logicalHeight = h;
   return ctx;
 }
 
@@ -977,14 +1032,20 @@ function drawHeat(ctx, W, n, maxValue) {
   clear(ctx);
   var size = ctx.logicalWidth;
   var cell = size / n;
-  for (var i = 0; i < n; i++) {
+  // If maxValue is 0 or very small, use a default
+  var actualMax = 0;
+  for (var i = 0; i < W.length; i++) {
+    if (Math.abs(W[i]) > actualMax) actualMax = Math.abs(W[i]);
+  }
+  var effectiveMax = Math.max(actualMax * 1.2, maxValue);
+  for (var i2 = 0; i2 < n; i2++) {
     for (var j = 0; j < n; j++) {
-      var v = Math.max(0, Math.min(1, W[i * n + j] / maxValue));
+      var v = Math.max(0, Math.min(1, W[i2 * n + j] / effectiveMax));
       var r = 255;
       var g = Math.round(255 - 190 * v);
       var b = Math.round(255 - 200 * v);
       ctx.fillStyle = "rgb(" + r + "," + g + "," + b + ")";
-      ctx.fillRect(j * cell, i * cell, cell + 0.5, cell + 0.5);
+      ctx.fillRect(j * cell, i2 * cell, cell + 0.5, cell + 0.5);
     }
   }
 }
@@ -995,14 +1056,12 @@ function drawDifference(ctx, WA, WB, n, maxValue) {
   var size = ctx.logicalWidth;
   var cell = size / n;
   var sharedCount = 0;
-  var totalSignificant = 0;
   for (var i = 0; i < n; i++) {
     for (var j = 0; j < n; j++) {
       var a = WA[i * n + j];
       var b = WB[i * n + j];
       var absA = Math.abs(a);
       var absB = Math.abs(b);
-      if (absA > 0.001 || absB > 0.001) totalSignificant++;
       if (absA > 0.005 && absB > 0.005) sharedCount++;
 
       if (absA > 0.005 && absB > 0.005) {
@@ -1023,7 +1082,7 @@ function drawDifference(ctx, WA, WB, n, maxValue) {
       ctx.fillRect(j * cell, i * cell, cell + 0.5, cell + 0.5);
     }
   }
-  return { sharedCount: sharedCount, totalSignificant: totalSignificant };
+  return { sharedCount: sharedCount };
 }
 
 function drawOuter(ctx, x, n) {
@@ -1359,27 +1418,51 @@ document.getElementById("predictCliff").addEventListener("click", function() {
   document.getElementById("predictSmooth").style.background = "none";
 });
 
+// ============================================================
+// SOUND FIX
+// ============================================================
 var soundEnabled = false;
 var audioContext = null;
+
 function beep(success) {
   if (!soundEnabled) return;
-  if (!audioContext) audioContext = new (window.AudioContext || window.webkitAudioContext)();
-  if (audioContext.state === "suspended") audioContext.resume();
-  var osc = audioContext.createOscillator();
-  var gain = audioContext.createGain();
-  osc.frequency.value = success ? 660 : 180;
-  gain.gain.setValueAtTime(0.0001, audioContext.currentTime);
-  gain.gain.exponentialRampToValueAtTime(0.08, audioContext.currentTime + 0.01);
-  gain.gain.exponentialRampToValueAtTime(0.0001, audioContext.currentTime + 0.18);
-  osc.connect(gain);
-  gain.connect(audioContext.destination);
-  osc.start();
-  osc.stop(audioContext.currentTime + 0.2);
+  try {
+    if (!audioContext) {
+      audioContext = new (window.AudioContext || window.webkitAudioContext)();
+    }
+    if (audioContext.state === "suspended") {
+      audioContext.resume();
+    }
+    var osc = audioContext.createOscillator();
+    var gain = audioContext.createGain();
+    osc.frequency.value = success ? 660 : 180;
+    gain.gain.setValueAtTime(0.0001, audioContext.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.08, audioContext.currentTime + 0.01);
+    gain.gain.exponentialRampToValueAtTime(0.0001, audioContext.currentTime + 0.18);
+    osc.connect(gain);
+    gain.connect(audioContext.destination);
+    osc.start();
+    osc.stop(audioContext.currentTime + 0.2);
+  } catch (e) {
+    // Silently fail if audio not supported
+  }
 }
+
 document.getElementById("soundBtn").addEventListener("click", function() {
   soundEnabled = !soundEnabled;
-  if (soundEnabled && !audioContext) audioContext = new AudioContext();
-  if (audioContext && audioContext.state === "suspended") audioContext.resume();
+  if (soundEnabled) {
+    // Create and resume audio context on user click
+    if (!audioContext) {
+      audioContext = new (window.AudioContext || window.webkitAudioContext)();
+    }
+    if (audioContext.state === "suspended") {
+      audioContext.resume();
+    }
+    // Play a test beep to confirm sound is working
+    beep(true);
+    // Also play another beep after a short delay to make it more noticeable
+    setTimeout(function() { beep(false); }, 200);
+  }
   this.textContent = soundEnabled ? "Sound on" : "Sound off";
 });
 
@@ -1399,6 +1482,8 @@ document.getElementById("themeBtn").addEventListener("click", function() {
   var running = false;
   var hookTimer = null;
   var autoPlayTimer = null;
+
+  window._hookNet = net;
 
   function render() {
     drawNetwork(netCtx, net);
@@ -1528,6 +1613,9 @@ document.getElementById("themeBtn").addEventListener("click", function() {
   var hOut = setupCanvas(document.getElementById("hebbOutput"), 140, 140);
   var gOut = setupCanvas(document.getElementById("gdOutput"), 140, 140);
 
+  window._hebbW = hebb.W;
+  window._gdW = gdW;
+
   function gdEpochRun() {
     var output = new Float32Array(49);
     for (var i = 0; i < 49; i++) {
@@ -1653,7 +1741,7 @@ document.getElementById("themeBtn").addEventListener("click", function() {
 })();
 
 // ============================================================
-// SECTION 4 - Memory Blender
+// SECTION 4
 // ============================================================
 (function() {
   var resultCtx = setupCanvas(document.getElementById("blendResult"), 220, 220);
@@ -1717,7 +1805,15 @@ document.getElementById("themeBtn").addEventListener("click", function() {
   var resultCtx = setupCanvas(document.getElementById("bdhResult"), 180, 180);
   var heatCtx = setupCanvas(document.getElementById("bdhHeat"), 190, 190);
   var attentionCtx = setupCanvas(document.getElementById("bdhAttention"), 190, 190);
-  var cue = erasedCue(PAT.T, 0.25, mulberry32(1212));
+  var runCount = 0;
+
+  net.store(PAT.T, 1, "T", BITS.T);
+  var initialCue = erasedCue(PAT.T, 0.25, mulberry32(1212));
+  net.state.set(initialCue);
+  drawGrid(resultCtx, initialCue, 7, "#7d4fa8");
+  drawHeat(heatCtx, net.W, 49);
+  drawOuter(attentionCtx, initialCue, 49);
+  document.getElementById("bdhStatus").textContent = "Ready. Press 'Recall from cue' to start. Sparsity: " + document.getElementById("bdhSparsity").value + "%";
 
   function updateKV() {
     var seqLen = parseInt(document.getElementById("kvSeqLen").value, 10);
@@ -1739,11 +1835,14 @@ document.getElementById("themeBtn").addEventListener("click", function() {
   function reset() {
     net = new HebbNet(49, 0.03, 3);
     net.store(PAT.T, 1, "T", BITS.T);
+    var cue = erasedCue(PAT.T, 0.25, mulberry32(1212 + runCount * 7));
     net.state.set(cue);
     drawGrid(resultCtx, cue, 7, "#7d4fa8");
     drawHeat(heatCtx, net.W, 49);
     drawOuter(attentionCtx, cue, 49);
-    document.getElementById("bdhStatus").textContent = "Ready. Run separated or coupled recall. Sparsity: " + document.getElementById("bdhSparsity").value + "%";
+    runCount = 0;
+    document.getElementById("bdhRunCount").textContent = "0 runs";
+    document.getElementById("bdhStatus").textContent = "Reset. Press 'Recall from cue' to start. Sparsity: " + document.getElementById("bdhSparsity").value + "%";
   }
 
   function applySparsity(W, sparsityPercent) {
@@ -1762,26 +1861,46 @@ document.getElementById("themeBtn").addEventListener("click", function() {
   function run() {
     var coupled = document.getElementById("bdhCoupled").checked;
     var sparsity = parseInt(document.getElementById("bdhSparsity").value, 10);
-    net = new HebbNet(49, 0.03, 3);
-    net.store(PAT.T, 1, "T", BITS.T);
+    runCount++;
+
+    var rng = mulberry32(1000 + runCount * 31);
+    var cue = erasedCue(PAT.T, 0.25, rng);
+
     var result = net.recall(cue, 14, coupled, 0.08);
+
     var sparseW = applySparsity(net.W, sparsity);
+
     var color = recovered(result.final, PAT.T) >= 0.85 ? "#27ae60" : "#c0392b";
     drawGrid(resultCtx, result.final, 7, color);
     drawHeat(heatCtx, sparseW, 49);
     drawOuter(attentionCtx, cue, 49);
+
     var score = recovered(result.final, PAT.T);
     var mode = coupled ? "Coupled (BDH-style)" : "Separated";
-    document.getElementById("bdhStatus").textContent = mode + " mode: " + Math.round(score * 100) + "% recovered · " + result.writes + " activity writes · sparsity: " + sparsity + "%";
+    document.getElementById("bdhStatus").textContent = mode + " mode | Run " + runCount + " | Recovery: " + Math.round(score * 100) + "% | Writes: " + result.writes + " | Sparsity: " + sparsity + "%";
+    document.getElementById("bdhRunCount").textContent = runCount + " runs";
+
+    var effect = sparsity < 3 ? "minimal effect on recall." :
+                 sparsity < 10 ? "moderate sparsity — some cross-talk reduced." :
+                 "high sparsity — significant cross-talk reduction.";
+    document.getElementById("bdhSparsityEffect").textContent = "Current sparsity: " + sparsity + "% — " + effect;
+
     beep(score >= 0.85);
   }
 
   document.getElementById("bdhRun").addEventListener("click", run);
   document.getElementById("bdhReset").addEventListener("click", reset);
+
   document.getElementById("bdhSparsity").addEventListener("input", function() {
     document.getElementById("bdhSparsityValue").textContent = this.value + "%";
+    var sp = parseInt(this.value, 10);
+    var effect = sp < 3 ? "minimal effect on recall." :
+                 sp < 10 ? "moderate sparsity — some cross-talk reduced." :
+                 "high sparsity — significant cross-talk reduction.";
+    document.getElementById("bdhSparsityEffect").textContent = "Current sparsity: " + sp + "% — " + effect;
   });
-  reset();
+
+  window._bdhNet = net;
 })();
 
 // ============================================================
@@ -2046,7 +2165,7 @@ document.getElementById("themeBtn").addEventListener("click", function() {
     var statusText = m === 0 ? "Add patterns to see interference." :
                      m <= theoretical * 0.5 ? "Low interference. Memory regime is stable." :
                      m <= theoretical ? "Moderate interference. Some patterns may collide." :
-                     "High interference. Capacity exceeded - recall will be unreliable.";
+                     "High interference. Capacity exceeded -- recall will be unreliable.";
     document.getElementById("interferenceStatus").textContent = statusText + " (Avg overlap: " + (avgInterference * 100).toFixed(1) + "%)";
   }
 
