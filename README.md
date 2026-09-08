@@ -142,13 +142,6 @@ No setup is required — the artifact is a single self-contained HTML file. To r
 
 ---
 
-## Repository Structure
-├── index.html # The complete interactive artifact (self-contained)
-├── README.md # This file
-├── one-page-concept-summary.pdf # Required 1-page concept summary (500–950 words)
-├── blog.pdf # The blog, as PDF
-├── LICENSE # MIT License
-
 
 **Public artifact URL:** ``
 
