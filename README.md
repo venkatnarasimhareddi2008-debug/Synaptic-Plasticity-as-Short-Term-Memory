@@ -143,7 +143,7 @@ No setup is required — the artifact is a single self-contained HTML file. To r
 ---
 
 
-**Public artifact URL:** ``
+**Public artifact URL:** `synaptic-plasticity.netlify.app`
 
 ---
 
