@@ -5,11 +5,11 @@ Interactive Hebbian network explorer - watch synaptic plasticity store, decay, a
 
 ## The One-Sentence Claim
 
-> A recurrent network with Hebbian synapses can store and retrieve multiple patterns from partial cues, but when retrieval uses a **fixed absolute threshold**, the trade-off between learning rate (η) and synaptic decay (λ) produces a **sharp failure boundary rather than a smooth decline** , because decay shrinks recurrent inputs toward the fixed threshold until retrieval collapses abruptly.
+ A recurrent network with Hebbian synapses can store and retrieve multiple patterns from partial cues, but when retrieval uses a **fixed absolute threshold**, the trade-off between learning rate (η) and synaptic decay (λ) produces a **sharp failure boundary rather than a smooth decline** , because decay shrinks recurrent inputs toward the fixed threshold until retrieval collapses abruptly.
 
 **Why this claim is falsifiable:** the artifact computes recall quality (overlap with the stored pattern) live for every (η, λ) pair. A learner can scan the phase space and directly observe whether the transition is sharp or smooth. If recall degraded linearly with decay, the claim would be refuted.
 
-> **Implementation note (stated, not hidden):** recall uses an *absolute* firing threshold θ, not a sign threshold. Under a pure sign threshold, uniform decay multiplies every input by the same factor and cannot change recall — so the sharp-boundary effect depends specifically on the absolute threshold. The artifact lets you toggle between the two to verify this.
+ **Implementation note (stated, not hidden):** recall uses an *absolute* firing threshold θ, not a sign threshold. Under a pure sign threshold, uniform decay multiplies every input by the same factor and cannot change recall — so the sharp-boundary effect depends specifically on the absolute threshold. The artifact lets you toggle between the two to verify this.
 
 ---
 
