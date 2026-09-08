@@ -138,7 +138,7 @@ Any reimplementation here is a **toy** and is labelled as such.
 6. To verify the sharp-boundary claim: sweep λ in Section 3 under both threshold modes and compare the recall-overlap curves.
 
 ### Setup (local)
-No setup is required — the artifact is a single self-contained HTML file. To run locally, clone the repo and open `index.html` directly.
+No setup is required — the artifact is a single self-contained HTML file. To run locally, clone the repo and open `prototype.html` directly.
 
 ---
 
